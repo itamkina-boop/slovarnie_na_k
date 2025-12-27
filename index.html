@@ -1,8 +1,11 @@
+Проблема с прокруткой на мобильных устройствах возникает из-за свойства overflow: hidden на body и фиксированных размеров. Вот исправленный код с улучшенной мобильной версией:
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Новогодние слова - Игра для изучения словарных слов</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -10,14 +13,17 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
             font-family: 'Comic Neue', cursive;
             background: linear-gradient(180deg, #0c2461 0%, #1e3799 30%, #4a69bd 100%);
-            min-height: 100vh;
-            overflow: hidden;
             color: #fff;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            position: relative;
         }
 
         .game-container {
@@ -25,8 +31,9 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
-            position: relative;
-            height: 100vh;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Шапка игры */
@@ -40,23 +47,25 @@
             margin-bottom: 25px;
             border: 3px solid #FF9800;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
         }
 
         .lives {
             display: flex;
             align-items: center;
-            gap: 15px;
-            font-size: 1.3rem;
+            gap: 10px;
+            font-size: 1rem;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .hearts {
             display: flex;
-            gap: 8px;
+            gap: 5px;
         }
 
         .heart {
-            font-size: 2rem;
+            font-size: 1.5rem;
             animation: pulse 2s infinite;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
@@ -69,23 +78,24 @@
         .stats {
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 15px;
         }
 
         .timer-container, .bonus-container {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.2rem;
+            gap: 8px;
+            font-size: 0.9rem;
             background: rgba(255,255,255,0.15);
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 15px;
             border: 2px solid rgba(255,255,255,0.3);
+            white-space: nowrap;
         }
 
         #timer, #bonus-count {
             font-weight: bold;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             color: #FFEB3B;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
@@ -93,21 +103,23 @@
         .progress {
             flex: 1;
             max-width: 500px;
-            margin: 0 30px;
+            margin: 0 15px;
+            min-width: 150px;
         }
 
         .progress-text {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 1.2rem;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .progress-bar {
-            height: 20px;
+            height: 16px;
             background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             border: 2px solid rgba(255,255,255,0.3);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
@@ -117,7 +129,7 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #00C853, #64DD17, #AEEA00);
-            border-radius: 10px;
+            border-radius: 8px;
             transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             overflow: hidden;
@@ -143,17 +155,18 @@
         }
 
         .dictionary-btn {
-            padding: 12px 25px;
-            font-size: 1.2rem;
+            padding: 10px 20px;
+            font-size: 1rem;
             background: linear-gradient(45deg, #2196F3, #0D47A1);
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+            white-space: nowrap;
         }
 
         .dictionary-btn:hover {
@@ -164,36 +177,39 @@
         /* Игровая сцена */
         .game-scene {
             position: relative;
-            height: calc(100vh - 160px);
+            flex: 1;
             background: linear-gradient(180deg, 
                 rgba(13, 71, 161, 0.9) 0%, 
                 rgba(25, 118, 210, 0.9) 30%,
                 rgba(66, 165, 245, 0.9) 100%);
             border-radius: 25px;
-            overflow: hidden;
             border: 4px solid #fff;
             box-shadow: 
                 0 15px 35px rgba(0, 0, 0, 0.4),
                 inset 0 0 50px rgba(255,255,255,0.1);
             display: flex;
+            overflow: hidden;
+            min-height: 500px;
         }
 
         /* Левая сторона - ёлка и дед мороз */
         .left-side {
             width: 40%;
             position: relative;
-            padding: 30px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
         }
 
         .tree-container {
             position: relative;
-            width: 300px;
-            height: 400px;
-            margin-bottom: 30px;
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
         }
 
         #tree {
@@ -218,8 +234,8 @@
 
         .light {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
             animation: twinkle 1.5s infinite;
             box-shadow: 0 0 15px currentColor;
@@ -243,8 +259,9 @@
 
         .santa-container {
             position: relative;
-            width: 200px;
-            height: 250px;
+            width: 100%;
+            max-width: 200px;
+            height: 200px;
         }
 
         #santa {
@@ -265,21 +282,20 @@
         .right-side {
             width: 60%;
             position: relative;
-            padding: 20px;
-            overflow: hidden;
+            padding: 15px;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .gifts-mountain {
-            position: absolute;
-            bottom: 0;
-            left: 0;
+            position: relative;
             width: 100%;
-            height: 70%;
+            min-height: 400px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: flex-end;
-            gap: 10px;
+            gap: 15px;
             padding: 20px;
             z-index: 2;
         }
@@ -287,13 +303,14 @@
         /* Мешок Деда Мороза */
         .santa-bag {
             position: absolute;
-            bottom: 30px;
-            right: 50px;
-            width: 200px;
-            height: 250px;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 200px;
             z-index: 10;
             transform-origin: bottom center;
             transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
         }
 
         .bag-inner {
@@ -306,8 +323,8 @@
 
         /* Стили для подарков */
         .gift {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             cursor: pointer;
             position: relative;
             transition: all 0.3s;
@@ -315,9 +332,11 @@
             background-repeat: no-repeat;
             background-position: center;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+            flex-shrink: 0;
+            touch-action: manipulation;
         }
 
-        .gift:hover {
+        .gift:hover, .gift:active {
             transform: translateY(-10px) scale(1.15) rotate(5deg);
             filter: drop-shadow(0 8px 15px rgba(255,255,255,0.4));
         }
@@ -385,14 +404,17 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(5px);
+            padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .modal-content {
             background: linear-gradient(135deg, #fff, #f8f8f8);
-            padding: 40px;
+            padding: 30px;
             border-radius: 25px;
             max-width: 600px;
-            width: 90%;
+            width: 100%;
             color: #333;
             box-shadow: 
                 0 25px 50px rgba(0, 0, 0, 0.5),
@@ -401,6 +423,7 @@
             border: 5px solid #fff;
             position: relative;
             animation: modalAppear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            margin: auto;
         }
 
         @keyframes modalAppear {
@@ -410,33 +433,38 @@
 
         .modal-content h3 {
             color: #D32F2F;
-            margin-bottom: 25px;
-            font-size: 2rem;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
             text-align: center;
             text-shadow: 2px 2px 0 #FFECB3;
+            line-height: 1.3;
         }
 
         .word-container {
-            margin: 30px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
             background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
             border-radius: 15px;
             border: 3px solid #2196F3;
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         .word-display {
-            font-size: 2rem;
+            font-size: 1.8rem;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: bold;
             color: #1a237e;
             letter-spacing: 2px;
+            display: inline-block;
+            min-width: min-content;
         }
 
         .letter-slot {
             display: inline-block;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             margin: 0 5px;
             border-bottom: 4px solid #2196F3;
             position: relative;
@@ -446,7 +474,7 @@
         .letter-slot input {
             width: 100%;
             height: 100%;
-            font-size: 2rem;
+            font-size: 1.8rem;
             text-align: center;
             border: none;
             background: transparent;
@@ -475,27 +503,27 @@
         .word-part {
             display: inline-block;
             margin: 0 2px;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #1a237e;
             vertical-align: middle;
         }
 
         .timer-display {
             text-align: center;
-            font-size: 1.3rem;
-            margin: 20px 0;
+            font-size: 1.2rem;
+            margin: 15px 0;
             color: #666;
         }
 
         #time-left {
             font-weight: bold;
             color: #D32F2F;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
         }
 
         .bonus-indicator {
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin: 15px 0;
             color: #4CAF50;
             font-weight: bold;
@@ -516,14 +544,16 @@
         }
 
         .hint-area {
-            margin: 20px 0;
-            padding: 15px;
+            margin: 15px 0;
+            padding: 12px;
             background: #FFF3E0;
             border-radius: 10px;
             border-left: 5px solid #FF9800;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: none;
             animation: hintAppear 0.5s;
+            word-break: break-word;
+            white-space: normal;
         }
 
         @keyframes hintAppear {
@@ -533,14 +563,15 @@
 
         .button-container {
             display: flex;
-            gap: 20px;
-            margin-top: 30px;
+            gap: 15px;
+            margin-top: 25px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn-primary, .btn-secondary {
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 12px 25px;
+            font-size: 1.1rem;
             border: none;
             border-radius: 25px;
             cursor: pointer;
@@ -548,15 +579,17 @@
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            min-width: 140px;
+            touch-action: manipulation;
         }
 
         .btn-primary {
             background: linear-gradient(45deg, #4CAF50, #2E7D32);
             color: white;
-            flex: 2;
+            flex: 1;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover, .btn-primary:active {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
         }
@@ -567,7 +600,7 @@
             flex: 1;
         }
 
-        .btn-secondary:hover {
+        .btn-secondary:hover, .btn-secondary:active {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(117, 117, 117, 0.4);
         }
@@ -585,6 +618,7 @@
             overflow-y: auto;
             margin: 20px 0;
             padding-right: 15px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .dictionary-item {
@@ -604,15 +638,17 @@
 
         .dictionary-word {
             font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #1a237e;
             margin-bottom: 5px;
+            word-break: break-word;
         }
 
         .dictionary-hint {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #666;
             font-style: italic;
+            word-break: break-word;
         }
 
         .dictionary-item.not-studied {
@@ -637,11 +673,14 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(10px);
+            padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .win-content, .lose-content {
             background: linear-gradient(135deg, #fff, #f0f0f0);
-            padding: 50px;
+            padding: 40px;
             border-radius: 30px;
             max-width: 600px;
             text-align: center;
@@ -650,6 +689,8 @@
             box-shadow: 
                 0 30px 60px rgba(0,0,0,0.5),
                 0 0 0 20px #FF9800;
+            width: 100%;
+            margin: auto;
         }
 
         .lose-content {
@@ -667,19 +708,20 @@
 
         .win-content h2, .lose-content h2 {
             color: #D32F2F;
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 20px;
             text-shadow: 3px 3px 0 #FFECB3;
+            line-height: 1.3;
         }
 
         .win-content p, .lose-content p {
-            font-size: 1.5rem;
-            margin: 20px 0;
+            font-size: 1.3rem;
+            margin: 15px 0;
             color: #333;
         }
 
         .stats-summary {
-            margin: 30px 0;
+            margin: 25px 0;
             padding: 20px;
             background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
             border-radius: 15px;
@@ -687,85 +729,227 @@
         }
 
         .stat-item {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin: 10px 0;
             color: #2E7D32;
         }
 
-        /* Адаптивность */
+        /* Адаптивность для мобильных устройств */
         @media (max-width: 1200px) {
             .game-scene {
                 flex-direction: column;
-                height: calc(100vh - 200px);
+                min-height: 700px;
             }
             
             .left-side, .right-side {
                 width: 100%;
-                height: 50%;
+            }
+            
+            .left-side {
+                height: 40%;
+                padding: 15px;
+            }
+            
+            .right-side {
+                height: 60%;
+                padding: 10px;
+            }
+            
+            .tree-container {
+                height: 200px;
+                margin-bottom: 10px;
+            }
+            
+            .santa-container {
+                height: 150px;
             }
             
             .gifts-mountain {
-                height: 90%;
+                min-height: 300px;
+                padding: 10px;
+                gap: 10px;
             }
             
             .gift {
                 width: 50px;
                 height: 50px;
             }
+            
+            .santa-bag {
+                width: 120px;
+                height: 160px;
+                bottom: 10px;
+                right: 10px;
+            }
         }
 
         @media (max-width: 768px) {
+            .game-container {
+                padding: 10px;
+                min-height: 100vh;
+            }
+            
             .game-header {
                 flex-direction: column;
                 gap: 15px;
                 padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .lives, .stats, .progress {
+                width: 100%;
+                justify-content: center;
             }
             
             .stats {
-                flex-direction: column;
+                flex-wrap: wrap;
                 gap: 10px;
             }
             
             .progress {
-                max-width: 100%;
                 margin: 10px 0;
+                max-width: 100%;
+            }
+            
+            .game-scene {
+                border-radius: 15px;
+                border-width: 2px;
+                min-height: 600px;
             }
             
             .left-side {
                 padding: 10px;
+                height: 35%;
             }
             
             .tree-container {
-                width: 200px;
-                height: 250px;
+                height: 150px;
+                margin-bottom: 5px;
             }
             
             .santa-container {
-                width: 150px;
-                height: 180px;
+                height: 100px;
+            }
+            
+            .right-side {
+                height: 65%;
+                padding: 5px;
+            }
+            
+            .gifts-mountain {
+                min-height: 250px;
+                gap: 8px;
+                padding: 5px;
+                justify-content: space-around;
+            }
+            
+            .gift {
+                width: 45px;
+                height: 45px;
             }
             
             .santa-bag {
-                right: 20px;
-                width: 120px;
-                height: 150px;
+                width: 100px;
+                height: 130px;
+                bottom: 5px;
+                right: 5px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .modal-content h3 {
+                font-size: 1.5rem;
+            }
+            
+            .word-display, .word-part {
+                font-size: 1.4rem;
             }
             
             .letter-slot {
                 width: 40px;
                 height: 40px;
+                margin: 0 3px;
             }
             
-            .word-display, .word-part {
-                font-size: 1.5rem;
-            }
-            
-            .modal-content {
-                padding: 20px;
+            .letter-slot input {
+                font-size: 1.4rem;
             }
             
             .button-container {
                 flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .win-content, .lose-content {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .win-content h2, .lose-content h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gift {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .santa-bag {
+                width: 80px;
+                height: 100px;
+            }
+            
+            .letter-slot {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .word-display, .word-part {
+                font-size: 1.2rem;
+            }
+            
+            .modal-content h3 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Улучшения для тач-устройств */
+        @media (hover: none) and (pointer: coarse) {
+            .gift:hover {
+                transform: none;
+            }
+            
+            .gift:active {
+                transform: translateY(-10px) scale(1.15) rotate(5deg);
+            }
+            
+            .dictionary-btn:hover,
+            .btn-primary:hover,
+            .btn-secondary:hover {
+                transform: none;
+            }
+            
+            .dictionary-btn:active,
+            .btn-primary:active,
+            .btn-secondary:active {
+                transform: translateY(-3px);
+            }
+        }
+
+        /* Предотвращение масштабирования на iOS */
+        @supports (-webkit-touch-callout: none) {
+            .game-container {
+                min-height: -webkit-fill-available;
             }
         }
     </style>
@@ -1518,6 +1702,7 @@
                 this.createSnowflakes();
                 this.updateUI();
                 this.loadProgress();
+                this.handleViewport();
             }
             
             setupEventListeners() {
@@ -1542,6 +1727,28 @@
                         this.closeDictionary();
                     }
                 });
+                
+                // Предотвращение масштабирования на мобильных устройствах при двойном тапе
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(event) {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        event.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, false);
+                
+                // Обработка изменения ориентации
+                window.addEventListener('orientationchange', () => this.handleViewport());
+                window.addEventListener('resize', () => this.handleViewport());
+            }
+            
+            handleViewport() {
+                // Установка высоты для мобильных устройств
+                if ('visualViewport' in window) {
+                    const visualViewport = window.visualViewport;
+                    document.documentElement.style.height = `${visualViewport.height}px`;
+                }
             }
             
             createGifts() {
@@ -1565,7 +1772,7 @@
                     gift.dataset.index = index;
                     gift.style.backgroundImage = `url('images/${giftType}.png')`;
                     
-                    // Случайная позиция в горе
+                    // Случайная позиция в горе (с учетом мобильных устройств)
                     const left = 5 + Math.random() * 85;
                     const bottom = Math.random() * 40;
                     const rotation = -20 + Math.random() * 40;
@@ -1576,6 +1783,18 @@
                     gift.style.transform = `rotate(${rotation}deg) scale(${scale})`;
                     
                     gift.addEventListener('click', () => this.openGift(index));
+                    
+                    // Добавляем поддержку тач-событий для мобильных устройств
+                    gift.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        gift.classList.add('clicked');
+                    });
+                    
+                    gift.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        gift.classList.remove('clicked');
+                        this.openGift(index);
+                    });
                     
                     // Если слово уже изучено, подарок собран
                     if (word.studied) {
@@ -1588,8 +1807,13 @@
             }
             
             createSnowflakes() {
-                // Создаем 50 снежинок
-                for (let i = 0; i < 50; i++) {
+                // Очищаем старые снежинки
+                this.elements.snowflakesContainer.innerHTML = '';
+                
+                // Создаем 30 снежинок (меньше для производительности на мобильных)
+                const snowflakeCount = window.innerWidth < 768 ? 20 : 30;
+                
+                for (let i = 0; i < snowflakeCount; i++) {
                     const snowflake = document.createElement('div');
                     snowflake.className = 'snowflake';
                     
@@ -1598,7 +1822,7 @@
                     snowflake.style.backgroundImage = `url('images/snowflake${snowflakeType}.png')`;
                     
                     // Случайный размер
-                    const size = 15 + Math.random() * 30;
+                    const size = 10 + Math.random() * 25;
                     snowflake.style.width = `${size}px`;
                     snowflake.style.height = `${size}px`;
                     
@@ -1607,7 +1831,7 @@
                     snowflake.style.left = `${left}%`;
                     
                     // Случайная скорость и задержка
-                    const duration = 5 + Math.random() * 10;
+                    const duration = 8 + Math.random() * 12;
                     const delay = Math.random() * 5;
                     
                     snowflake.style.animation = `
@@ -1689,6 +1913,10 @@
                         input.maxLength = 1;
                         input.dataset.index = this.inputSlots.length;
                         
+                        // Оптимизация для мобильных устройств
+                        input.setAttribute('inputmode', 'text');
+                        input.setAttribute('autocapitalize', 'characters');
+                        
                         input.addEventListener('input', (e) => {
                             // Переводим в верхний регистр
                             e.target.value = e.target.value.toUpperCase();
@@ -1748,13 +1976,20 @@
                 // Запускаем таймер
                 this.startTimer();
                 
-                // Фокус на первое поле ввода
+                // Фокус на первое поле ввода с задержкой для мобильных
                 if (this.inputSlots.length > 0) {
-                    setTimeout(() => this.inputSlots[0].focus(), 100);
+                    setTimeout(() => {
+                        this.inputSlots[0].focus();
+                        // Для мобильных устройств пытаемся вызвать клавиатуру
+                        if ('ontouchstart' in window) {
+                            this.inputSlots[0].click();
+                        }
+                    }, 300);
                 }
                 
                 // Показываем модальное окно
                 this.elements.questionModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             }
             
             startTimer() {
@@ -1913,6 +2148,12 @@
             closeQuestionModal() {
                 this.elements.questionModal.style.display = 'none';
                 clearInterval(this.timerInterval);
+                document.body.style.overflow = 'auto';
+                
+                // Скрываем клавиатуру на мобильных устройствах
+                if ('ontouchstart' in window) {
+                    document.activeElement.blur();
+                }
             }
             
             showDictionary() {
@@ -1936,10 +2177,12 @@
                 });
                 
                 this.elements.dictionaryModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             }
             
             closeDictionary() {
                 this.elements.dictionaryModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
             
             checkWinCondition() {
@@ -1955,7 +2198,7 @@
                 clearInterval(this.timerInterval);
                 
                 // Зажигаем гирлянду
-                this.elements.garland.classList.add('on');
+                this.elements.garland.style.opacity = '1';
                 
                 // Анимация Деда Мороза
                 this.elements.santa.style.animation = 'santaFloat 1s infinite';
@@ -1968,6 +2211,7 @@
                 // Показываем экран победы
                 setTimeout(() => {
                     this.elements.winScreen.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                 }, 2000);
             }
             
@@ -1975,6 +2219,7 @@
                 this.gameActive = false;
                 clearInterval(this.timerInterval);
                 this.elements.loseScreen.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             }
             
             restartGame() {
@@ -1990,7 +2235,7 @@
                 clearInterval(this.timerInterval);
                 
                 // Сбрасываем анимации
-                this.elements.garland.classList.remove('on');
+                this.elements.garland.style.opacity = '0';
                 this.elements.santaBag.style.transform = 'scale(1)';
                 this.elements.bagInner.style.backgroundImage = "url('images/bag_empty.png')";
                 
@@ -1999,6 +2244,9 @@
                 this.elements.loseScreen.style.display = 'none';
                 this.elements.questionModal.style.display = 'none';
                 this.elements.dictionaryModal.style.display = 'none';
+                
+                // Восстанавливаем прокрутку
+                document.body.style.overflow = 'auto';
                 
                 // Пересоздаем подарки
                 this.createGifts();
@@ -2065,6 +2313,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             new VocabularyGame();
         });
+
+        // Предотвращение скролла при касании элементов
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.classList.contains('modal') || 
+                e.target.closest('.modal') || 
+                e.target.classList.contains('win-screen') || 
+                e.target.classList.contains('lose-screen')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </body>
 </html>
