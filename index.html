@@ -254,44 +254,37 @@
             padding-bottom: 50px;
         }
 
-        /* Сугробы - по всей ширине */
+        /* Сугробы - с PNG картинкой */
         .snowdrift {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 120px;
-            background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
-            border-radius: 100% 100% 0 0;
+            background: url('fon.png') no-repeat center bottom;
+            background-size: cover;
             z-index: 4;
             box-shadow: 
                 0 -10px 30px rgba(255,255,255,0.3),
                 inset 0 5px 15px rgba(255,255,255,0.5);
         }
 
-        .snowdrift::before {
+        /* Заглушка, если картинки нет */
+        .snowdrift:before {
             content: '';
             position: absolute;
-            bottom: 40px;
-            left: 5%;
-            width: 90%;
-            height: 60px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
             border-radius: 100% 100% 0 0;
-            z-index: 3;
-            box-shadow: inset 0 5px 15px rgba(255,255,255,0.3);
+            z-index: -1;
+            display: none;
         }
 
-        .snowdrift::after {
-            content: '';
-            position: absolute;
-            bottom: 70px;
-            left: 15%;
-            width: 70%;
-            height: 40px;
-            background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
-            border-radius: 100% 100% 0 0;
-            z-index: 2;
+        .snowdrift.no-image:before {
+            display: block;
         }
 
         /* Ёлка */
@@ -308,7 +301,7 @@
             height: 95%;
             max-height: 550px;
             aspect-ratio: 0.7;
-            background: url('tree.png') no-repeat center bottom;
+            background: url('https://cdn-icons-png.flaticon.com/512/3348/3348131.png') no-repeat center bottom;
             background-size: contain;
             filter: drop-shadow(0 15px 40px rgba(0,0,0,0.8));
         }
@@ -326,7 +319,7 @@
         #santa {
             width: 100%;
             height: 100%;
-            background: url('santa.png') no-repeat center bottom;
+            background: url('https://cdn-icons-png.flaticon.com/512/3484/3484730.png') no-repeat center bottom;
             background-size: contain;
             filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
         }
@@ -371,6 +364,9 @@
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
             transition: transform 0.3s;
             bottom: 0;
+            background-color: #e74c3c;
+            border-radius: 5px;
+            border: 2px solid #c0392b;
         }
 
         /* Правая сторона - все подарки внизу в одной куче */
@@ -399,27 +395,36 @@
             position: relative;
             display: flex;
             flex-wrap: wrap;
-            align-content: flex-end;
+            align-content: flex-start;
             justify-content: center;
             gap: 5px;
             padding: 10px;
-            overflow: hidden;
+            overflow-y: auto;
             min-height: 200px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-top: 10px;
         }
 
-        /* Стили для подарков в куче - накладываются друг на друга */
+        /* Стили для подарков в куче */
         .gift {
             width: 60px;
             height: 60px;
             cursor: pointer;
-            position: relative;
             transition: all 0.3s;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.4));
             touch-action: manipulation;
-            margin-top: -30px; /* Перекрытие подарков */
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: relative;
+            margin: 5px;
+            border: 3px solid;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.3);
         }
 
         .gift:hover, .gift:active {
@@ -593,7 +598,7 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Словарь - без размытия */
+        /* Словарь */
         .dictionary-modal {
             display: none;
             position: absolute;
@@ -680,7 +685,7 @@
             opacity: 0.8;
         }
 
-        /* Экран победы и поражения - без размытия */
+        /* Экран победы и поражения */
         .win-screen, .lose-screen {
             display: none;
             position: absolute;
@@ -844,7 +849,6 @@
             .gift {
                 width: 50px;
                 height: 50px;
-                margin-top: -25px;
             }
             
             .question-window {
@@ -885,7 +889,7 @@
             .gift {
                 width: 40px;
                 height: 40px;
-                margin-top: -20px;
+                font-size: 0.8rem;
             }
             
             .gift-under-tree {
@@ -944,6 +948,7 @@
     
     <!-- Снег - поверх игрового экрана -->
     <div id="snowflakes-container" class="snowflakes-container"></div>
+
     <div class="game-container">
         <!-- Шапка с жизнями и прогрессом -->
         <div class="game-header">
@@ -981,7 +986,7 @@
         <div class="game-scene">
             <!-- Левая сторона - зимняя сцена -->
             <div class="left-side">
-                <!-- Сугробы - по всей ширине -->
+                <!-- Сугробы с PNG картинкой -->
                 <div class="snowdrift"></div>
                 
                 <!-- Ёлка -->
@@ -1654,7 +1659,7 @@
                 this.gameActive = true;
                 this.bonusPoints = 0;
                 this.inputSlots = [];
-                this.availableGifts = []; // Индексы доступных подарков (те, что сверху кучи)
+                this.availableGifts = [];
                 
                 // DOM элементы
                 this.elements = {
@@ -1682,7 +1687,6 @@
                     finalLives: document.getElementById('final-lives'),
                     loseFinalGifts: document.getElementById('lose-final-gifts'),
                     loseFinalBonus: document.getElementById('lose-final-bonus'),
-                    modalOverlay: document.getElementById('modal-overlay'),
                     congratulationMessage: document.getElementById('congratulation-message')
                 };
                 
@@ -1690,12 +1694,34 @@
             }
             
             init() {
+                this.checkSnowdriftImage();
                 this.createStars();
                 this.createSnowflakes();
                 this.setupEventListeners();
                 this.createGiftsPile();
                 this.updateUI();
-                this.handleViewport();
+                
+                // Даем время на отрисовку DOM
+                setTimeout(() => {
+                    this.handleViewport();
+                }, 100);
+            }
+            
+            checkSnowdriftImage() {
+                // Проверяем, загрузилась ли картинка сугробов
+                const snowdrift = document.querySelector('.snowdrift');
+                const img = new Image();
+                img.src = 'fon.png';
+                
+                img.onload = () => {
+                    snowdrift.style.backgroundImage = "url('fon.png')";
+                };
+                
+                img.onerror = () => {
+                    // Если картинка не загрузилась, показываем заглушку
+                    snowdrift.classList.add('no-image');
+                    snowdrift.style.backgroundImage = 'none';
+                };
             }
             
             createStars() {
@@ -1720,20 +1746,16 @@
             }
             
             createSnowflakes() {
-                const snowflakeCount = 50;
+                const snowflakeCount = 30;
                 
                 for (let i = 0; i < snowflakeCount; i++) {
                     const snowflake = document.createElement('div');
                     snowflake.className = 'snowflake';
                     
-                    // Случайный тип снежинки
-                    const snowflakeType = Math.floor(Math.random() * 3) + 1;
-                    snowflake.style.backgroundImage = `url('snowflake${snowflakeType}.png')`;
-                    
-                    // Случайный размер
-                    const size = 6 + Math.random() * 15;
-                    snowflake.style.width = `${size}px`;
-                    snowflake.style.height = `${size}px`;
+                    // Используем эмодзи снежинки, если нет картинок
+                    snowflake.innerHTML = '❄️';
+                    snowflake.style.fontSize = `${10 + Math.random() * 15}px`;
+                    snowflake.style.color = 'white';
                     
                     // Случайная позиция
                     const left = Math.random() * 100;
@@ -1744,33 +1766,30 @@
                     const delay = Math.random() * 5;
                     const swayAmount = 20 + Math.random() * 40;
                     
-                    // Добавляем стили для анимаций
-                    const styleId = `snowflake-style-${i}`;
-                    if (!document.getElementById(styleId)) {
-                        const style = document.createElement('style');
-                        style.id = styleId;
-                        style.textContent = `
-                            @keyframes snowfall-${i} {
-                                0% {
-                                    transform: translateY(-100px) translateX(0) rotate(0deg);
-                                    opacity: 0;
-                                }
-                                10% {
-                                    opacity: 0.7;
-                                }
-                                90% {
-                                    opacity: 0.7;
-                                }
-                                100% {
-                                    transform: translateY(100vh) translateX(${swayAmount}px) rotate(${180 + Math.random() * 180}deg);
-                                    opacity: 0;
-                                }
-                            }
-                        `;
-                        document.head.appendChild(style);
-                    }
+                    // Создаем анимацию
+                    snowflake.style.animation = `fall ${duration}s linear ${delay}s infinite`;
                     
-                    snowflake.style.animation = `snowfall-${i} ${duration}s linear ${delay}s infinite`;
+                    // Добавляем стили для анимации
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes fall {
+                            0% {
+                                transform: translateY(-100px) translateX(0) rotate(0deg);
+                                opacity: 0;
+                            }
+                            10% {
+                                opacity: 1;
+                            }
+                            90% {
+                                opacity: 1;
+                            }
+                            100% {
+                                transform: translateY(100vh) translateX(${swayAmount}px) rotate(${360}deg);
+                                opacity: 0;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
                     
                     this.elements.snowflakesContainer.appendChild(snowflake);
                 }
@@ -1786,22 +1805,31 @@
                 document.getElementById('win-restart-btn').addEventListener('click', () => this.restartGame());
                 document.getElementById('lose-restart-btn').addEventListener('click', () => this.restartGame());
                 
-                // Закрытие модальных окон по клику на оверлей
-                this.elements.modalOverlay.addEventListener('click', () => {
-                    this.closeDictionary();
-                    this.closeWinScreen();
-                    this.closeLoseScreen();
+                // Закрытие окон по клику вне их области
+                this.elements.dictionaryModal.addEventListener('click', (e) => {
+                    if (e.target === this.elements.dictionaryModal) {
+                        this.closeDictionary();
+                    }
+                });
+                
+                this.elements.winScreen.addEventListener('click', (e) => {
+                    if (e.target === this.elements.winScreen) {
+                        this.closeWinScreen();
+                    }
+                });
+                
+                this.elements.loseScreen.addEventListener('click', (e) => {
+                    if (e.target === this.elements.loseScreen) {
+                        this.closeLoseScreen();
+                    }
                 });
                 
                 // Предотвращение масштабирования на мобильных устройствах
-                let lastTouchEnd = 0;
-                document.addEventListener('touchend', function(event) {
-                    const now = Date.now();
-                    if (now - lastTouchEnd <= 300) {
+                document.addEventListener('touchmove', function(event) {
+                    if (event.scale !== 1) {
                         event.preventDefault();
                     }
-                    lastTouchEnd = now;
-                }, false);
+                }, { passive: false });
                 
                 // Обработка изменения размера окна
                 window.addEventListener('resize', () => this.handleViewport());
@@ -1822,42 +1850,33 @@
                 this.elements.giftsPile.innerHTML = '';
                 this.availableGifts = [];
                 
-                // Типы подарков (4 цвета)
-                const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
+                // Цвета подарков
+                const giftColors = [
+                    { bg: '#e74c3c', border: '#c0392b' }, // Красный
+                    { bg: '#3498db', border: '#2980b9' }, // Синий
+                    { bg: '#2ecc71', border: '#27ae60' }, // Зеленый
+                    { bg: '#f1c40f', border: '#f39c12' }  // Желтый
+                ];
                 
-                // Параметры кучи подарков
-                const pileWidth = this.elements.giftsPile.offsetWidth;
-                const pileHeight = this.elements.giftsPile.offsetHeight;
-                const giftSize = 60;
-                
-                // Определяем, сколько подарков поместится в ряд
-                const giftsInRow = Math.floor(pileWidth / (giftSize * 0.8));
-                
-                // Создаем подарки в виде кучи (пирамиды) внизу экрана
+                // Создаем подарки
                 for (let i = 0; i < this.words.length; i++) {
-                    const giftType = giftTypes[i % giftTypes.length];
+                    const colorIndex = i % giftColors.length;
+                    const color = giftColors[colorIndex];
                     
                     // Подарок в куче
                     const gift = document.createElement('div');
                     gift.className = 'gift';
                     gift.dataset.index = i;
-                    gift.dataset.zIndex = i;
-                    gift.style.backgroundImage = `url('${giftType}.png')`;
-                    gift.title = `Слово ${i + 1}`;
                     
-                    // Позиционируем подарки в виде пирамиды
-                    const row = Math.floor(i / giftsInRow);
-                    const col = i % giftsInRow;
-                    const offsetX = Math.random() * 20 - 10; // Случайное смещение для реалистичности
+                    // Стили подарка
+                    gift.style.backgroundColor = color.bg;
+                    gift.style.borderColor = color.border;
                     
-                    const left = col * (giftSize * 0.8) + offsetX;
-                    const top = pileHeight - (row + 1) * (giftSize * 0.6); // Снизу вверх
-                    const rotation = -15 + Math.random() * 30;
+                    // Номер подарка
+                    gift.textContent = i + 1;
                     
-                    gift.style.left = `${left}px`;
-                    gift.style.top = `${top}px`;
-                    gift.style.transform = `rotate(${rotation}deg)`;
-                    gift.style.zIndex = i;
+                    // Подсказка при наведении
+                    gift.title = `Слово ${i + 1}: ${this.words[i].question}`;
                     
                     // Событие клика на подарок
                     gift.addEventListener('click', () => this.openGift(i));
@@ -1874,52 +1893,65 @@
                     
                     // Если слово уже изучено, скрываем подарок
                     if (this.words[i].studied) {
-                        gift.style.display = 'none';
+                        gift.style.opacity = '0.3';
+                        gift.style.pointerEvents = 'none';
+                        gift.style.textDecoration = 'line-through';
                     } else {
-                        // Добавляем в доступные только подарки верхнего ряда
-                        if (row === 0) {
-                            this.availableGifts.push(i);
-                        }
+                        // Добавляем в доступные
+                        this.availableGifts.push(i);
                     }
                     
                     this.elements.giftsPile.appendChild(gift);
                 }
             }
             
-            addGiftToMountain(giftType) {
+            addGiftToMountain(giftColor) {
                 const gift = document.createElement('div');
                 gift.className = 'gift-under-tree';
-                gift.style.backgroundImage = `url('${giftType}.png')`;
                 
-                // Позиция в горе подарков (случайное распределение)
-                const mountainWidth = this.elements.giftMountain.offsetWidth;
-                const mountainHeight = this.elements.giftMountain.offsetHeight;
+                // Случайный цвет для подарка под елкой
+                const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const darkColor = this.darkenColor(color, 20);
                 
-                // Случайная позиция в горе
-                const left = Math.random() * 80; // 0-80% от ширины горы
-                const bottom = Math.random() * 60; // 0-60% от высоты горы
+                gift.style.backgroundColor = color;
+                gift.style.borderColor = darkColor;
+                
+                // Позиция в горе подарков
+                const left = Math.random() * 80;
+                const bottom = Math.random() * 60;
                 const rotation = -20 + Math.random() * 40;
-                const scale = 0.5 + Math.random() * 0.3; // Разный размер для реалистичности
+                const scale = 0.5 + Math.random() * 0.3;
                 
                 gift.style.left = `${left}%`;
                 gift.style.bottom = `${bottom}%`;
                 gift.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-                gift.style.zIndex = Math.floor(Math.random() * 100); // Разные уровни в горе
+                gift.style.zIndex = Math.floor(Math.random() * 100);
                 
                 this.elements.giftMountain.appendChild(gift);
+            }
+            
+            darkenColor(color, percent) {
+                // Простая функция для затемнения цвета
+                const num = parseInt(color.replace("#", ""), 16);
+                const amt = Math.round(2.55 * percent);
+                const R = (num >> 16) - amt;
+                const G = (num >> 8 & 0x00FF) - amt;
+                const B = (num & 0x0000FF) - amt;
+                
+                return "#" + (
+                    0x1000000 +
+                    (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                    (B < 255 ? B < 1 ? 0 : B : 255)
+                ).toString(16).slice(1);
             }
             
             openGift(index) {
                 if (!this.gameActive) return;
                 
-                // Проверяем, доступен ли этот подарок (находится ли сверху)
+                // Проверяем, доступен ли этот подарок
                 if (!this.availableGifts.includes(index)) {
-                    // Показываем сообщение, что нужно сначала собрать подарки сверху
-                    this.elements.hintArea.textContent = "Сначала собери подарки сверху кучи!";
-                    this.elements.hintArea.style.display = 'block';
-                    setTimeout(() => {
-                        this.elements.hintArea.style.display = 'none';
-                    }, 1500);
                     return;
                 }
                 
@@ -2010,9 +2042,6 @@
                 if (this.inputSlots.length > 0) {
                     setTimeout(() => {
                         this.inputSlots[0].focus();
-                        if ('ontouchstart' in window) {
-                            this.inputSlots[0].click();
-                        }
                     }, 300);
                 }
                 
@@ -2051,10 +2080,10 @@
                     this.animateGiftDisappear();
                     
                     // Добавляем подарок в гору под ёлкой
-                    const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
-                    const giftType = giftTypes[this.currentWordIndex % giftTypes.length];
                     setTimeout(() => {
-                        this.addGiftToMountain(giftType);
+                        const giftColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f'];
+                        const giftColor = giftColors[this.currentWordIndex % giftColors.length];
+                        this.addGiftToMountain(giftColor);
                     }, 800);
                     
                     // Удаляем из доступных подарков
@@ -2062,9 +2091,6 @@
                     if (giftIndex > -1) {
                         this.availableGifts.splice(giftIndex, 1);
                     }
-                    
-                    // Находим подарки под этим и делаем их доступными
-                    this.updateAvailableGifts();
                     
                     // Закрываем окно с вопросом через 1.5 секунды
                     setTimeout(() => {
@@ -2100,33 +2126,6 @@
                         }, 1500);
                     }
                 }
-            }
-            
-            updateAvailableGifts() {
-                // После сбора подарка делаем доступными подарки, которые оказались сверху
-                const allGifts = document.querySelectorAll('.gift:not(.collected)');
-                const pileWidth = this.elements.giftsPile.offsetWidth;
-                const giftSize = 60;
-                const giftsInRow = Math.floor(pileWidth / (giftSize * 0.8));
-                
-                // Находим минимальную позицию Y среди оставшихся подарков
-                let minY = Infinity;
-                allGifts.forEach(gift => {
-                    const rect = gift.getBoundingClientRect();
-                    if (rect.top < minY) {
-                        minY = rect.top;
-                    }
-                });
-                
-                // Добавляем в доступные все подарки с минимальной позицией Y
-                allGifts.forEach(gift => {
-                    const rect = gift.getBoundingClientRect();
-                    const index = parseInt(gift.dataset.index);
-                    
-                    if (Math.abs(rect.top - minY) < 10 && !this.availableGifts.includes(index)) {
-                        this.availableGifts.push(index);
-                    }
-                });
             }
             
             animateSanta() {
@@ -2208,22 +2207,18 @@
                 });
                 
                 this.elements.dictionaryModal.style.display = 'block';
-                this.elements.modalOverlay.style.display = 'block';
             }
             
             closeDictionary() {
                 this.elements.dictionaryModal.style.display = 'none';
-                this.elements.modalOverlay.style.display = 'none';
             }
             
             closeWinScreen() {
                 this.elements.winScreen.style.display = 'none';
-                this.elements.modalOverlay.style.display = 'none';
             }
             
             closeLoseScreen() {
                 this.elements.loseScreen.style.display = 'none';
-                this.elements.modalOverlay.style.display = 'none';
             }
             
             checkWinCondition() {
@@ -2248,7 +2243,6 @@
                 
                 // Показываем экран победы
                 this.elements.winScreen.style.display = 'block';
-                this.elements.modalOverlay.style.display = 'block';
             }
             
             gameOver() {
@@ -2260,7 +2254,6 @@
                 
                 // Показываем экран поражения
                 this.elements.loseScreen.style.display = 'block';
-                this.elements.modalOverlay.style.display = 'block';
             }
             
             restartGame() {
@@ -2304,16 +2297,6 @@
                 game.handleViewport();
             });
         });
-
-        // Предотвращение скролла при касании элементов
-        document.addEventListener('touchmove', function(e) {
-            if (e.target.classList.contains('modal') || 
-                e.target.closest('.modal') || 
-                e.target.classList.contains('win-screen') || 
-                e.target.classList.contains('lose-screen')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
     </script>
 </body>
 </html>
