@@ -84,7 +84,6 @@
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.6),
                 inset 0 0 50px rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px);
             overflow: hidden;
             position: relative;
             z-index: 3;
@@ -206,24 +205,34 @@
             100% { transform: translateX(100%); }
         }
 
-        .dictionary-btn {
+        .dictionary-btn, .restart-btn {
             padding: 8px 16px;
             font-size: 0.9rem;
-            background: linear-gradient(45deg, #9b59b6, #8e44ad);
-            color: white;
             border: none;
             border-radius: 16px;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
-            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
             white-space: nowrap;
+            margin-left: 10px;
         }
 
-        .dictionary-btn:hover {
+        .dictionary-btn {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
+
+        .dictionary-btn:hover, .restart-btn:hover {
             transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 6px 16px rgba(155, 89, 182, 0.6);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
         }
 
         /* Игровая сцена */
@@ -245,29 +254,44 @@
             padding-bottom: 50px;
         }
 
-        /* Сугробы */
+        /* Сугробы - по всей ширине */
         .snowdrift {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 80px;
+            height: 120px;
             background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
             border-radius: 100% 100% 0 0;
             z-index: 4;
-            box-shadow: 0 -10px 30px rgba(255,255,255,0.3);
+            box-shadow: 
+                0 -10px 30px rgba(255,255,255,0.3),
+                inset 0 5px 15px rgba(255,255,255,0.5);
         }
 
         .snowdrift::before {
             content: '';
             position: absolute;
-            bottom: 20px;
-            left: 10%;
-            width: 80%;
-            height: 40px;
+            bottom: 40px;
+            left: 5%;
+            width: 90%;
+            height: 60px;
             background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
             border-radius: 100% 100% 0 0;
             z-index: 3;
+            box-shadow: inset 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+        .snowdrift::after {
+            content: '';
+            position: absolute;
+            bottom: 70px;
+            left: 15%;
+            width: 70%;
+            height: 40px;
+            background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
+            border-radius: 100% 100% 0 0;
+            z-index: 2;
         }
 
         /* Ёлка */
@@ -292,7 +316,7 @@
         /* Дед Мороз - без постоянной анимации */
         .santa-container {
             position: absolute;
-            bottom: 80px;
+            bottom: 120px;
             right: 15%;
             height: 30%;
             aspect-ratio: 0.6;
@@ -305,7 +329,6 @@
             background: url('santa.png') no-repeat center bottom;
             background-size: contain;
             filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
-            /* Анимация только при правильном ответе */
         }
 
         /* Анимация для Деда Мороза при правильном ответе */
@@ -316,22 +339,30 @@
             75% { transform: translateY(-20px) rotate(-5deg); }
         }
 
-        /* Область для подарков под ёлкой */
+        /* Область для горы подарков под ёлкой */
         .gifts-under-tree {
             position: absolute;
-            bottom: 80px;
+            bottom: 120px;
             left: 0;
             width: 100%;
-            height: 100px;
+            height: 150px;
             z-index: 4;
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 5px;
-            padding: 0 20%;
+        }
+
+        .gift-mountain {
+            position: relative;
+            width: 80%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
         }
 
         .gift-under-tree {
+            position: absolute;
             width: 40px;
             height: 40px;
             background-size: contain;
@@ -339,7 +370,7 @@
             background-position: center bottom;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
             transition: transform 0.3s;
-            flex-shrink: 0;
+            bottom: 0;
         }
 
         /* Правая сторона - все подарки в одной куче */
@@ -429,7 +460,6 @@
             border: 4px solid #ecf0f1;
             z-index: 100;
             animation: questionAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            backdrop-filter: blur(5px);
         }
 
         @keyframes questionAppear {
@@ -562,7 +592,7 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Словарь */
+        /* Словарь - без размытия */
         .dictionary-modal {
             display: none;
             position: absolute;
@@ -581,7 +611,6 @@
             border: 4px solid #ecf0f1;
             z-index: 1000;
             animation: modalAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            backdrop-filter: blur(5px);
         }
 
         @keyframes modalAppear {
@@ -650,7 +679,7 @@
             opacity: 0.8;
         }
 
-        /* Экран победы и поражения */
+        /* Экран победы и поражения - без размытия */
         .win-screen, .lose-screen {
             display: none;
             position: absolute;
@@ -668,7 +697,6 @@
             border: 4px solid #ecf0f1;
             z-index: 1001;
             animation: modalAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            backdrop-filter: blur(5px);
         }
 
         .lose-screen {
@@ -696,10 +724,21 @@
             color: #ecf0f1;
         }
 
+        .congratulation-message {
+            font-size: 1.2rem;
+            color: #2ecc71;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(46, 204, 113, 0.2);
+            border-radius: 10px;
+            border: 2px solid #2ecc71;
+        }
+
         .stats-summary {
             margin: 15px 0;
             padding: 15px;
-            background: rgba(46, 204, 113, 0.3);
+            background: rgba(46, 204, 113, 0.2);
             border-radius: 12px;
             border: 2px solid #2ecc71;
         }
@@ -739,8 +778,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 25, 49, 0.8);
-            backdrop-filter: blur(3px);
+            background: rgba(10, 25, 49, 0.9);
             z-index: 999;
         }
 
@@ -770,6 +808,17 @@
         }
 
         @media (max-width: 768px) {
+            .game-header {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            .game-header > * {
+                flex: 1 1 auto;
+            }
+            
             .game-scene {
                 flex-direction: column;
                 padding: 10px;
@@ -838,6 +887,11 @@
                 margin: 5px 0;
             }
             
+            .dictionary-btn, .restart-btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
             .gift {
                 width: 45px;
                 height: 45px;
@@ -873,11 +927,13 @@
             }
             
             .dictionary-btn:hover,
+            .restart-btn:hover,
             .btn-primary:hover {
                 transform: none;
             }
             
             .dictionary-btn:active,
+            .restart-btn:active,
             .btn-primary:active {
                 transform: translateY(-2px);
             }
@@ -931,13 +987,14 @@
             </div>
             
             <button id="dictionary-btn" class="dictionary-btn">📖 Словарь</button>
+            <button id="restart-btn" class="restart-btn">🔄 Начать сначала</button>
         </div>
 
         <!-- Игровое поле -->
         <div class="game-scene">
             <!-- Левая сторона - зимняя сцена -->
             <div class="left-side">
-                <!-- Сугробы -->
+                <!-- Сугробы - по всей ширине -->
                 <div class="snowdrift"></div>
                 
                 <!-- Ёлка -->
@@ -950,9 +1007,11 @@
                     <div id="santa"></div>
                 </div>
                 
-                <!-- Подарки под ёлкой -->
+                <!-- Гора подарков под ёлкой -->
                 <div id="gifts-under-tree" class="gifts-under-tree">
-                    <!-- Собранные подарки появятся здесь -->
+                    <div class="gift-mountain">
+                        <!-- Собранные подарки появятся здесь в виде горы -->
+                    </div>
                 </div>
             </div>
 
@@ -1000,6 +1059,9 @@
         <div id="win-screen" class="win-screen">
             <div class="win-content">
                 <h2>🎉 Поздравляем! 🎉</h2>
+                <div id="congratulation-message" class="congratulation-message">
+                    <!-- Поздравление будет выбрано случайно -->
+                </div>
                 <p>Вы собрали все подарки!</p>
                 <p>Дед Мороз доволен!</p>
                 
@@ -1009,7 +1071,7 @@
                     <div class="stat-item">❤️ Осталось жизней: <span id="final-lives">3</span></div>
                 </div>
                 
-                <button id="restart-btn" class="btn-primary">Играть снова</button>
+                <button id="win-restart-btn" class="btn-primary">Играть снова</button>
             </div>
         </div>
 
@@ -1018,7 +1080,14 @@
             <div class="lose-content">
                 <h2>😔 Попробуйте ещё раз!</h2>
                 <p>Не все подарки собраны!</p>
-                <button id="try-again-btn" class="btn-primary">Попробовать снова</button>
+                <p>Но вы уже многому научились!</p>
+                
+                <div class="stats-summary">
+                    <div class="stat-item">🎁 Собрано подарков: <span id="lose-final-gifts">0</span></div>
+                    <div class="stat-item">⭐ Получено бонусов: <span id="lose-final-bonus">0</span></div>
+                </div>
+                
+                <button id="lose-restart-btn" class="btn-primary">Начать сначала</button>
             </div>
         </div>
     </div>
@@ -1577,6 +1646,17 @@
             }
         ];
 
+        // Поздравления для победы
+        const congratulations = [
+            "🎄 С Новым Годом! Вы стали настоящим мастером словарных слов!",
+            "❄️ Поздравляем! Знания - лучший подарок на Новый год!",
+            "🌟 Отличная работа! В новом году вас ждут новые успехи!",
+            "🎁 Вы собрали все подарки! Теперь вы готовы к новым учебным победам!",
+            "⛄ Умница! Так держать! Счастливого Нового года!",
+            "✨ Браво! Ваши знания сияют ярче новогодних гирлянд!",
+            "🎅 Дед Мороз гордится вами! Продолжайте в том же духе!"
+        ];
+
         class VocabularyGame {
             constructor() {
                 this.words = vocabularyWords;
@@ -1591,7 +1671,7 @@
                 // DOM элементы
                 this.elements = {
                     giftsPile: document.getElementById('gifts-pile'),
-                    giftsUnderTree: document.getElementById('gifts-under-tree'),
+                    giftMountain: document.querySelector('.gift-mountain'),
                     questionWindow: document.getElementById('question-window'),
                     dictionaryModal: document.getElementById('dictionary-modal'),
                     winScreen: document.getElementById('win-screen'),
@@ -1612,7 +1692,10 @@
                     finalGifts: document.getElementById('final-gifts'),
                     finalBonus: document.getElementById('final-bonus'),
                     finalLives: document.getElementById('final-lives'),
-                    modalOverlay: document.getElementById('modal-overlay')
+                    loseFinalGifts: document.getElementById('lose-final-gifts'),
+                    loseFinalBonus: document.getElementById('lose-final-bonus'),
+                    modalOverlay: document.getElementById('modal-overlay'),
+                    congratulationMessage: document.getElementById('congratulation-message')
                 };
                 
                 this.init();
@@ -1711,9 +1794,10 @@
                 document.getElementById('dictionary-btn').addEventListener('click', () => this.showDictionary());
                 document.getElementById('close-dictionary').addEventListener('click', () => this.closeDictionary());
                 
-                // Кнопки перезапуска
+                // Кнопки начала сначала
                 document.getElementById('restart-btn').addEventListener('click', () => this.restartGame());
-                document.getElementById('try-again-btn').addEventListener('click', () => this.restartGame());
+                document.getElementById('win-restart-btn').addEventListener('click', () => this.restartGame());
+                document.getElementById('lose-restart-btn').addEventListener('click', () => this.restartGame());
                 
                 // Закрытие модальных окон по клику на оверлей
                 this.elements.modalOverlay.addEventListener('click', () => {
@@ -1808,22 +1892,27 @@
                 });
             }
             
-            addGiftUnderTree(giftType) {
+            addGiftToMountain(giftType) {
                 const gift = document.createElement('div');
                 gift.className = 'gift-under-tree';
                 gift.style.backgroundImage = `url('${giftType}.png')`;
                 
-                // Позиция под ёлкой (смещаем влево, чтобы не перекрывать Деда Мороза)
-                const left = 10 + Math.random() * 40; // От 10% до 50%
-                const bottom = 10 + Math.random() * 30;
-                const rotation = -15 + Math.random() * 30;
-                const scale = 0.6 + Math.random() * 0.2;
+                // Позиция в горе подарков (случайное распределение)
+                const mountainWidth = this.elements.giftMountain.offsetWidth;
+                const mountainHeight = this.elements.giftMountain.offsetHeight;
+                
+                // Случайная позиция в горе
+                const left = Math.random() * 80; // 0-80% от ширины горы
+                const bottom = Math.random() * 60; // 0-60% от высоты горы
+                const rotation = -20 + Math.random() * 40;
+                const scale = 0.5 + Math.random() * 0.3; // Разный размер для реалистичности
                 
                 gift.style.left = `${left}%`;
                 gift.style.bottom = `${bottom}%`;
                 gift.style.transform = `rotate(${rotation}deg) scale(${scale})`;
+                gift.style.zIndex = Math.floor(Math.random() * 100); // Разные уровни в горе
                 
-                this.elements.giftsUnderTree.appendChild(gift);
+                this.elements.giftMountain.appendChild(gift);
             }
             
             openGift(index) {
@@ -1956,11 +2045,11 @@
                     // Анимация исчезновения подарка
                     this.animateGiftDisappear();
                     
-                    // Добавляем подарок под ёлку
+                    // Добавляем подарок в гору под ёлкой
                     const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
                     const giftType = giftTypes[this.currentWordIndex % giftTypes.length];
                     setTimeout(() => {
-                        this.addGiftUnderTree(giftType);
+                        this.addGiftToMountain(giftType);
                     }, 800);
                     
                     // Сохраняем прогресс
@@ -2110,6 +2199,10 @@
             winGame() {
                 this.gameActive = false;
                 
+                // Выбираем случайное поздравление
+                const randomCongratulation = congratulations[Math.floor(Math.random() * congratulations.length)];
+                this.elements.congratulationMessage.textContent = randomCongratulation;
+                
                 // Обновляем статистику
                 this.elements.finalGifts.textContent = this.collectedGifts;
                 this.elements.finalBonus.textContent = this.bonusPoints;
@@ -2122,6 +2215,12 @@
             
             gameOver() {
                 this.gameActive = false;
+                
+                // Обновляем статистику для экрана поражения
+                this.elements.loseFinalGifts.textContent = this.collectedGifts;
+                this.elements.loseFinalBonus.textContent = this.bonusPoints;
+                
+                // Показываем экран поражения
                 this.elements.loseScreen.style.display = 'block';
                 this.elements.modalOverlay.style.display = 'block';
             }
@@ -2137,14 +2236,14 @@
                 this.bonusPoints = 0;
                 this.gameActive = true;
                 
-                // Скрываем экраны
-                this.closeWinScreen();
-                this.closeLoseScreen();
+                // Скрываем все модальные окна
                 this.closeQuestionWindow();
                 this.closeDictionary();
+                this.closeWinScreen();
+                this.closeLoseScreen();
                 
-                // Очищаем подарки под ёлкой
-                this.elements.giftsUnderTree.innerHTML = '';
+                // Очищаем гору подарков под ёлкой
+                this.elements.giftMountain.innerHTML = '';
                 
                 // Пересоздаем подарки
                 this.createGiftsPile();
@@ -2174,10 +2273,10 @@
                         if (this.words[index]) {
                             this.words[index].studied = studied;
                             if (studied) {
-                                // Добавляем подарок под ёлку
+                                // Добавляем подарок в гору под ёлкой
                                 const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
                                 const giftType = giftTypes[index % giftTypes.length];
-                                this.addGiftUnderTree(giftType);
+                                this.addGiftToMountain(giftType);
                             }
                         }
                     });
