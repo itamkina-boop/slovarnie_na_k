@@ -13,23 +13,24 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html {
+        html, body {
             height: 100%;
-            overflow-x: hidden;
+            overflow: hidden;
+            font-family: 'Comic Neue', cursive;
         }
 
         body {
-            font-family: 'Comic Neue', cursive;
-            background: linear-gradient(180deg, #0a1931 0%, #1a3658 30%, #2c5282 70%, #1a3658 100%);
+            background: linear-gradient(180deg, #0a1931 0%, #1a3658 50%, #2c5282 100%);
             color: #fff;
-            min-height: 100%;
             position: relative;
-            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Звёздное небо */
         .stars {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -50,16 +51,43 @@
             50% { opacity: 1; }
         }
 
-        .game-container {
+        /* Снег */
+        .snowflakes-container {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 15px;
-            min-height: 100vh;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .snowflake {
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
+        }
+
+        /* Основной контейнер игры */
+        .game-container {
+            width: 98%;
+            height: 96%;
+            max-width: 1800px;
+            max-height: 1200px;
             display: flex;
             flex-direction: column;
+            background: rgba(26, 82, 118, 0.3);
+            border-radius: 25px;
+            border: 4px solid #2c3e50;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                inset 0 0 50px rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            overflow: hidden;
             position: relative;
-            z-index: 2;
+            z-index: 3;
         }
 
         /* Шапка игры */
@@ -67,86 +95,83 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 25px;
+            padding: 10px 20px;
             background: linear-gradient(90deg, rgba(41, 128, 185, 0.9), rgba(52, 152, 219, 0.9));
-            border-radius: 20px;
-            margin-bottom: 20px;
-            border: 3px solid #3498db;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
+            border-bottom: 3px solid #3498db;
             flex-shrink: 0;
+            height: 70px;
         }
 
         .lives {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem;
+            gap: 8px;
+            font-size: 0.9rem;
             font-weight: bold;
             white-space: nowrap;
         }
 
         .hearts {
             display: flex;
-            gap: 5px;
+            gap: 4px;
         }
 
         .heart {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             animation: pulse 2s infinite;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.1); }
         }
 
         .stats {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .bonus-container {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+            gap: 6px;
+            font-size: 0.85rem;
             background: rgba(255,255,255,0.15);
-            padding: 6px 12px;
-            border-radius: 15px;
+            padding: 5px 10px;
+            border-radius: 12px;
             border: 2px solid rgba(255,255,255,0.3);
             white-space: nowrap;
         }
 
         #bonus-count {
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #FFEB3B;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .progress {
             flex: 1;
-            max-width: 500px;
+            max-width: 400px;
             margin: 0 15px;
-            min-width: 150px;
+            min-width: 120px;
         }
 
         .progress-text {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
             font-weight: bold;
             white-space: nowrap;
         }
 
         .progress-bar {
-            height: 16px;
+            height: 12px;
             background: rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
             border: 2px solid rgba(255,255,255,0.3);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
@@ -156,7 +181,7 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #3498db, #2ecc71, #f1c40f);
-            border-radius: 8px;
+            border-radius: 6px;
             transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             overflow: hidden;
@@ -182,58 +207,42 @@
         }
 
         .dictionary-btn {
-            padding: 10px 20px;
-            font-size: 1rem;
+            padding: 8px 16px;
+            font-size: 0.9rem;
             background: linear-gradient(45deg, #9b59b6, #8e44ad);
             color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 16px;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
             white-space: nowrap;
         }
 
         .dictionary-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.6);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 16px rgba(155, 89, 182, 0.6);
         }
 
         /* Игровая сцена */
         .game-scene {
-            position: relative;
             flex: 1;
-            background: linear-gradient(180deg, 
-                rgba(26, 82, 118, 0.9) 0%, 
-                rgba(41, 128, 185, 0.9) 30%,
-                rgba(52, 152, 219, 0.9) 70%,
-                rgba(26, 82, 118, 0.9) 100%);
-            border-radius: 25px;
-            border: 4px solid #2c3e50;
-            box-shadow: 
-                0 15px 35px rgba(0, 0, 0, 0.5),
-                inset 0 0 50px rgba(255,255,255,0.1);
             display: flex;
+            position: relative;
             overflow: hidden;
-            min-height: 600px;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
+            padding: 15px;
         }
 
-        /* Левая сторона - лесная сцена */
+        /* Левая сторона - зимняя сцена */
         .left-side {
-            width: 50%;
+            flex: 0 0 60%;
             position: relative;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 20px;
-            overflow: hidden;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 50px;
         }
 
         /* Сугробы */
@@ -242,64 +251,51 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 150px;
+            height: 80px;
             background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
             border-radius: 100% 100% 0 0;
-            z-index: 3;
+            z-index: 4;
             box-shadow: 0 -10px 30px rgba(255,255,255,0.3);
         }
 
         .snowdrift::before {
             content: '';
             position: absolute;
-            bottom: 30px;
+            bottom: 20px;
             left: 10%;
             width: 80%;
-            height: 60px;
-            background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
-            border-radius: 100% 100% 0 0;
-            z-index: 2;
-        }
-
-        .snowdrift::after {
-            content: '';
-            position: absolute;
-            bottom: 60px;
-            left: 20%;
-            width: 60%;
             height: 40px;
             background: linear-gradient(180deg, #ecf0f1, #bdc3c7);
             border-radius: 100% 100% 0 0;
-            z-index: 1;
+            z-index: 3;
         }
 
         /* Ёлка */
         .tree-container {
             position: relative;
-            width: 100%;
-            height: 80%;
+            height: 100%;
             display: flex;
-            justify-content: center;
             align-items: flex-end;
-            z-index: 4;
+            justify-content: center;
+            z-index: 5;
         }
 
         #tree {
-            width: 60%;
-            height: 100%;
+            height: 95%;
+            max-height: 600px;
+            aspect-ratio: 0.7;
             background: url('tree.png') no-repeat center bottom;
             background-size: contain;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6));
-            z-index: 5;
+            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.8));
         }
 
         /* Дед Мороз */
         .santa-container {
             position: absolute;
-            bottom: 150px;
-            right: 30%;
-            width: 25%;
-            height: 40%;
+            bottom: 80px;
+            right: 25%;
+            height: 30%;
+            aspect-ratio: 0.6;
             z-index: 6;
         }
 
@@ -308,38 +304,37 @@
             height: 100%;
             background: url('santa.png') no-repeat center bottom;
             background-size: contain;
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
             animation: santaFloat 4s ease-in-out infinite;
         }
 
         @keyframes santaFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-5px) rotate(1deg); }
-            75% { transform: translateY(5px) rotate(-1deg); }
+            25% { transform: translateY(-4px) rotate(1deg); }
+            75% { transform: translateY(4px) rotate(-1deg); }
         }
 
         /* Область для подарков под ёлкой */
         .gifts-under-tree {
             position: absolute;
-            bottom: 150px;
-            left: 20%;
-            width: 60%;
-            height: 200px;
+            bottom: 80px;
+            left: 0;
+            width: 100%;
+            height: 100px;
             z-index: 4;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
             align-items: flex-end;
-            gap: 10px;
-            padding: 10px;
+            gap: 5px;
+            padding: 0 20%;
         }
 
         .gift-under-tree {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             background-size: contain;
             background-repeat: no-repeat;
-            background-position: center;
+            background-position: center bottom;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
             transition: transform 0.3s;
             flex-shrink: 0;
@@ -351,40 +346,39 @@
 
         /* Правая сторона - подарки */
         .right-side {
-            width: 50%;
-            position: relative;
-            padding: 20px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            flex: 0 0 40%;
             display: flex;
             flex-direction: column;
+            padding: 10px;
         }
 
         .right-side h3 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            padding: 10px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
             border: 2px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
         }
 
         .gifts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 15px;
-            padding: 15px;
-            justify-items: center;
-            align-items: center;
             flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            padding: 10px;
+            overflow: hidden;
+            align-content: start;
         }
 
         /* Стили для подарков в сетке */
         .gift {
-            width: 80px;
+            width: 100%;
             height: 80px;
             cursor: pointer;
             position: relative;
@@ -398,7 +392,7 @@
         }
 
         .gift:hover, .gift:active {
-            transform: translateY(-10px) scale(1.1) rotate(5deg);
+            transform: translateY(-8px) scale(1.08) rotate(5deg);
             filter: drop-shadow(0 8px 20px rgba(255,255,255,0.3));
         }
 
@@ -414,11 +408,11 @@
                 z-index: 100;
             }
             30% {
-                transform: translate(calc(-50vw + 150px), -40vh) rotate(180deg) scale(1.2);
+                transform: translate(calc(-50vw + 300px), -40vh) rotate(180deg) scale(1.2);
                 opacity: 1;
             }
             70% {
-                transform: translate(calc(-50vw + 100px), 10vh) rotate(360deg) scale(1);
+                transform: translate(calc(-50vw + 250px), 20vh) rotate(360deg) scale(1);
                 opacity: 1;
             }
             100% {
@@ -428,80 +422,50 @@
             }
         }
 
-        /* Снег */
-        .snowflakes-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -50px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            opacity: 0.8;
-            filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
-        }
-
         /* Модальное окно с вопросом */
         .modal {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 25, 49, 0.95);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
             background: linear-gradient(135deg, #2c3e50, #34495e);
-            padding: 30px;
-            border-radius: 25px;
-            max-width: 600px;
-            width: 100%;
+            border-radius: 20px;
             color: #ecf0f1;
             box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.7),
-                0 0 0 10px #3498db,
-                0 0 0 15px #2c3e50;
-            border: 5px solid #ecf0f1;
-            position: relative;
-            animation: modalAppear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            margin: auto;
+                0 20px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 8px #3498db,
+                0 0 0 12px #2c3e50;
+            border: 4px solid #ecf0f1;
+            z-index: 1000;
+            animation: modalAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(5px);
         }
 
         @keyframes modalAppear {
-            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .modal-content {
+            padding: 20px;
         }
 
         .modal-content h3 {
             color: #f1c40f;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
             text-align: center;
             text-shadow: 2px 2px 0 #2c3e50;
             line-height: 1.3;
         }
 
         .word-container {
-            margin: 20px 0;
-            padding: 20px;
+            margin: 15px 0;
+            padding: 15px;
             background: rgba(52, 152, 219, 0.2);
-            border-radius: 15px;
+            border-radius: 12px;
             border: 3px solid #3498db;
             overflow-x: auto;
             white-space: nowrap;
@@ -509,9 +473,9 @@
         }
 
         .word-display {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: bold;
             color: #ecf0f1;
             letter-spacing: 2px;
@@ -521,20 +485,20 @@
 
         .letter-slot {
             display: inline-block;
-            width: 50px;
-            height: 50px;
-            margin: 0 5px;
-            border-bottom: 4px solid #f1c40f;
+            width: 45px;
+            height: 45px;
+            margin: 0 4px;
+            border-bottom: 3px solid #f1c40f;
             position: relative;
             vertical-align: middle;
             background: rgba(255,255,255,0.1);
-            border-radius: 10px 10px 0 0;
+            border-radius: 8px 8px 0 0;
         }
 
         .letter-slot input {
             width: 100%;
             height: 100%;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             text-align: center;
             border: none;
             background: transparent;
@@ -547,7 +511,7 @@
 
         .letter-slot input:focus {
             background: rgba(241, 196, 15, 0.1);
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .letter-slot.filled {
@@ -556,26 +520,26 @@
 
         @keyframes letterPop {
             0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
 
         .word-part {
             display: inline-block;
             margin: 0 2px;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: #ecf0f1;
             vertical-align: middle;
         }
 
         .bonus-indicator {
             text-align: center;
-            font-size: 1.1rem;
-            margin: 15px 0;
+            font-size: 1rem;
+            margin: 10px 0;
             color: #2ecc71;
             font-weight: bold;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
             transition: all 0.3s;
         }
 
@@ -591,47 +555,75 @@
         }
 
         .hint-area {
-            margin: 15px 0;
-            padding: 15px;
+            margin: 10px 0;
+            padding: 12px;
             background: rgba(241, 196, 15, 0.1);
-            border-radius: 10px;
-            border-left: 5px solid #f1c40f;
-            font-size: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #f1c40f;
+            font-size: 0.9rem;
             display: none;
-            animation: hintAppear 0.5s;
+            animation: hintAppear 0.4s;
             word-break: break-word;
             white-space: normal;
             text-align: center;
         }
 
         @keyframes hintAppear {
-            from { opacity: 0; transform: translateX(-20px); }
+            from { opacity: 0; transform: translateX(-15px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
         /* Словарь */
+        .dictionary-modal {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 500px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 20px;
+            color: #ecf0f1;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 8px #9b59b6,
+                0 0 0 12px #2c3e50;
+            border: 4px solid #ecf0f1;
+            z-index: 1000;
+            animation: modalAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(5px);
+        }
+
         .dictionary-content {
-            max-width: 700px;
-            max-height: 80vh;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            height: 100%;
+        }
+
+        .dictionary-content h3 {
+            color: #f1c40f;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            text-shadow: 2px 2px 0 #2c3e50;
+            flex-shrink: 0;
         }
 
         .dictionary-list {
             flex: 1;
             overflow-y: auto;
-            margin: 20px 0;
-            padding-right: 15px;
-            -webkit-overflow-scrolling: touch;
+            margin: 10px 0;
+            padding-right: 10px;
         }
 
         .dictionary-item {
-            padding: 15px;
-            margin: 10px 0;
+            padding: 12px;
+            margin: 8px 0;
             background: rgba(52, 152, 219, 0.2);
-            border-radius: 10px;
-            border-left: 5px solid #2ecc71;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 4px solid #2ecc71;
             transition: all 0.3s;
         }
 
@@ -642,14 +634,14 @@
 
         .dictionary-word {
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #ecf0f1;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             word-break: break-word;
         }
 
         .dictionary-hint {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: #bdc3c7;
             font-style: italic;
             word-break: break-word;
@@ -667,149 +659,168 @@
         /* Экран победы и поражения */
         .win-screen, .lose-screen {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 25, 49, 0.98);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 20px;
+            color: #ecf0f1;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 8px #2ecc71,
+                0 0 0 12px #2c3e50;
+            border: 4px solid #ecf0f1;
             z-index: 1001;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(15px);
-            padding: 20px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            animation: modalAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(5px);
+        }
+
+        .lose-screen {
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 8px #e74c3c,
+                0 0 0 12px #2c3e50;
         }
 
         .win-content, .lose-content {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            padding: 40px;
-            border-radius: 30px;
-            max-width: 600px;
+            padding: 25px;
             text-align: center;
-            border: 8px solid #2ecc71;
-            animation: winAppear 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 
-                0 30px 60px rgba(0,0,0,0.7),
-                0 0 0 20px #3498db;
-            width: 100%;
-            margin: auto;
-        }
-
-        .lose-content {
-            border-color: #e74c3c;
-            box-shadow: 
-                0 30px 60px rgba(0,0,0,0.7),
-                0 0 0 20px #e74c3c;
-        }
-
-        @keyframes winAppear {
-            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-            70% { transform: scale(1.1) rotate(10deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
 
         .win-content h2, .lose-content h2 {
             color: #f1c40f;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-shadow: 3px 3px 0 #2c3e50;
-            line-height: 1.3;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 #2c3e50;
         }
 
         .win-content p, .lose-content p {
-            font-size: 1.3rem;
-            margin: 15px 0;
+            font-size: 1.1rem;
+            margin: 10px 0;
             color: #ecf0f1;
         }
 
         .stats-summary {
-            margin: 25px 0;
-            padding: 20px;
+            margin: 15px 0;
+            padding: 15px;
             background: rgba(46, 204, 113, 0.2);
-            border-radius: 15px;
-            border: 3px solid #2ecc71;
+            border-radius: 12px;
+            border: 2px solid #2ecc71;
         }
 
         .stat-item {
-            font-size: 1.2rem;
-            margin: 10px 0;
+            font-size: 1rem;
+            margin: 8px 0;
             color: #2ecc71;
         }
 
         .btn-primary {
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 12px 24px;
+            font-size: 1rem;
             background: linear-gradient(45deg, #3498db, #2980b9);
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
-            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+            margin-top: 15px;
             touch-action: manipulation;
         }
 
         .btn-primary:hover, .btn-primary:active {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.6);
+        }
+
+        /* Оверлей для модальных окон */
+        .modal-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 49, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 999;
         }
 
         /* Адаптивность для мобильных устройств */
         @media (max-width: 1200px) {
+            .game-container {
+                width: 99%;
+                height: 97%;
+            }
+            
+            .left-side {
+                flex: 0 0 55%;
+            }
+            
+            .right-side {
+                flex: 0 0 45%;
+            }
+            
+            .gifts-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
             .game-scene {
                 flex-direction: column;
-                min-height: 800px;
+                padding: 10px;
             }
             
             .left-side, .right-side {
+                flex: none;
                 width: 100%;
             }
             
             .left-side {
                 height: 50%;
+                padding-bottom: 30px;
             }
             
             .right-side {
                 height: 50%;
-                padding: 10px;
             }
             
-            .tree-container {
-                height: 70%;
+            #tree {
+                height: 80%;
             }
             
             .santa-container {
-                width: 30%;
+                height: 25%;
                 right: 20%;
             }
             
             .gifts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-                gap: 10px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                padding: 5px;
             }
             
             .gift {
-                width: 70px;
                 height: 70px;
+            }
+            
+            .modal, .dictionary-modal, .win-screen, .lose-screen {
+                width: 90%;
+                max-width: 400px;
             }
         }
 
-        @media (max-width: 768px) {
-            .game-container {
-                padding: 10px;
-                min-height: 100vh;
-            }
-            
+        @media (max-width: 480px) {
             .game-header {
                 flex-direction: column;
-                gap: 15px;
-                padding: 15px;
-                margin-bottom: 15px;
+                height: auto;
+                padding: 8px;
+                gap: 8px;
             }
             
             .lives, .stats, .progress {
@@ -817,123 +828,21 @@
                 justify-content: center;
             }
             
-            .stats {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            
             .progress {
-                margin: 10px 0;
-                max-width: 100%;
-            }
-            
-            .game-scene {
-                border-radius: 15px;
-                border-width: 2px;
-                min-height: 700px;
-            }
-            
-            .left-side {
-                padding: 10px;
-                height: 45%;
-            }
-            
-            .tree-container {
-                height: 80%;
-            }
-            
-            .santa-container {
-                width: 40%;
-                right: 15%;
-                bottom: 120px;
-            }
-            
-            .right-side {
-                height: 55%;
-                padding: 5px;
+                margin: 5px 0;
             }
             
             .gifts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-                gap: 8px;
-                padding: 10px;
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .gift {
-                width: 60px;
                 height: 60px;
             }
             
             .gift-under-tree {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .modal-content {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            .modal-content h3 {
-                font-size: 1.5rem;
-            }
-            
-            .word-display, .word-part {
-                font-size: 1.4rem;
-            }
-            
-            .letter-slot {
-                width: 40px;
-                height: 40px;
-                margin: 0 3px;
-            }
-            
-            .letter-slot input {
-                font-size: 1.4rem;
-            }
-            
-            .win-content, .lose-content {
-                padding: 25px;
-                margin: 10px;
-            }
-            
-            .win-content h2, .lose-content h2 {
-                font-size: 2rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .gift {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .gifts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-                gap: 6px;
-            }
-            
-            .gift-under-tree {
-                width: 30px;
-                height: 30px;
-            }
-            
-            .letter-slot {
                 width: 35px;
                 height: 35px;
-            }
-            
-            .word-display, .word-part {
-                font-size: 1.2rem;
-            }
-            
-            .modal-content h3 {
-                font-size: 1.3rem;
-            }
-            
-            .right-side h3 {
-                font-size: 1.4rem;
-                padding: 8px;
             }
         }
 
@@ -944,7 +853,7 @@
             }
             
             .gift:active {
-                transform: translateY(-10px) scale(1.1) rotate(5deg);
+                transform: translateY(-8px) scale(1.08) rotate(5deg);
             }
             
             .dictionary-btn:hover,
@@ -954,14 +863,14 @@
             
             .dictionary-btn:active,
             .btn-primary:active {
-                transform: translateY(-3px);
+                transform: translateY(-2px);
             }
         }
 
         /* Предотвращение масштабирования на iOS */
         @supports (-webkit-touch-callout: none) {
-            .game-container {
-                min-height: -webkit-fill-available;
+            html, body {
+                height: -webkit-fill-available;
             }
         }
     </style>
@@ -972,6 +881,9 @@
     
     <!-- Снег -->
     <div id="snowflakes-container" class="snowflakes-container"></div>
+    
+    <!-- Оверлей для модальных окон -->
+    <div id="modal-overlay" class="modal-overlay"></div>
 
     <div class="game-container">
         <!-- Шапка с жизнями и прогрессом -->
@@ -1058,7 +970,7 @@
         </div>
 
         <!-- Модальное окно словаря -->
-        <div id="dictionary-modal" class="modal">
+        <div id="dictionary-modal" class="dictionary-modal">
             <div class="modal-content dictionary-content">
                 <h3>📚 Словарь изученных слов</h3>
                 <div id="dictionary-list" class="dictionary-list">
@@ -1683,7 +1595,8 @@
                     stars: document.getElementById('stars'),
                     finalGifts: document.getElementById('final-gifts'),
                     finalBonus: document.getElementById('final-bonus'),
-                    finalLives: document.getElementById('final-lives')
+                    finalLives: document.getElementById('final-lives'),
+                    modalOverlay: document.getElementById('modal-overlay')
                 };
                 
                 this.init();
@@ -1701,13 +1614,13 @@
             
             createStars() {
                 const starsContainer = this.elements.stars;
-                const starCount = 150;
+                const starCount = 100;
                 
                 for (let i = 0; i < starCount; i++) {
                     const star = document.createElement('div');
                     star.className = 'star';
                     
-                    const size = Math.random() * 3;
+                    const size = Math.random() * 2 + 1;
                     star.style.width = `${size}px`;
                     star.style.height = `${size}px`;
                     
@@ -1721,7 +1634,7 @@
             }
             
             createSnowflakes() {
-                const snowflakeCount = window.innerWidth < 768 ? 40 : 60;
+                const snowflakeCount = 40;
                 
                 for (let i = 0; i < snowflakeCount; i++) {
                     const snowflake = document.createElement('div');
@@ -1732,7 +1645,7 @@
                     snowflake.style.backgroundImage = `url('snowflake${snowflakeType}.png')`;
                     
                     // Случайный размер
-                    const size = 10 + Math.random() * 25;
+                    const size = 8 + Math.random() * 20;
                     snowflake.style.width = `${size}px`;
                     snowflake.style.height = `${size}px`;
                     
@@ -1741,13 +1654,13 @@
                     snowflake.style.left = `${left}%`;
                     
                     // Случайная скорость и задержка
-                    const duration = 8 + Math.random() * 12;
-                    const delay = Math.random() * 5;
-                    const swayAmount = 30 + Math.random() * 70;
+                    const duration = 6 + Math.random() * 8;
+                    const delay = Math.random() * 3;
+                    const swayAmount = 20 + Math.random() * 40;
                     
                     snowflake.style.animation = `
                         snowfall ${duration}s linear ${delay}s infinite,
-                        sway ${3 + Math.random() * 4}s ease-in-out ${delay}s infinite alternate
+                        sway ${2 + Math.random() * 3}s ease-in-out ${delay}s infinite alternate
                     `;
                     
                     // Добавляем стили для анимаций
@@ -1759,13 +1672,13 @@
                                 opacity: 0;
                             }
                             10% {
-                                opacity: 0.8;
+                                opacity: 0.6;
                             }
                             90% {
-                                opacity: 0.8;
+                                opacity: 0.6;
                             }
                             100% {
-                                transform: translateY(100vh) rotate(${360 + Math.random() * 360}deg);
+                                transform: translateY(100vh) rotate(${180 + Math.random() * 180}deg);
                                 opacity: 0;
                             }
                         }
@@ -1794,17 +1707,15 @@
                 document.getElementById('restart-btn').addEventListener('click', () => this.restartGame());
                 document.getElementById('try-again-btn').addEventListener('click', () => this.restartGame());
                 
-                // Закрытие модальных окон по клику вне окна
-                window.addEventListener('click', (e) => {
-                    if (e.target === this.elements.questionModal) {
-                        this.closeQuestionModal();
-                    }
-                    if (e.target === this.elements.dictionaryModal) {
-                        this.closeDictionary();
-                    }
+                // Закрытие модальных окон по клику на оверлей
+                this.elements.modalOverlay.addEventListener('click', () => {
+                    this.closeQuestionModal();
+                    this.closeDictionary();
+                    this.closeWinScreen();
+                    this.closeLoseScreen();
                 });
                 
-                // Предотвращение масштабирования на мобильных устройствах при двойном тапе
+                // Предотвращение масштабирования на мобильных устройствах
                 let lastTouchEnd = 0;
                 document.addEventListener('touchend', function(event) {
                     const now = Date.now();
@@ -1814,22 +1725,28 @@
                     lastTouchEnd = now;
                 }, false);
                 
-                // Обработка изменения ориентации
-                window.addEventListener('orientationchange', () => this.handleViewport());
+                // Обработка изменения размера окна
                 window.addEventListener('resize', () => this.handleViewport());
             }
             
             handleViewport() {
-                if ('visualViewport' in window) {
-                    const visualViewport = window.visualViewport;
-                    document.documentElement.style.height = `${visualViewport.height}px`;
+                // Подстройка под размер экрана
+                const gameContainer = document.querySelector('.game-container');
+                const headerHeight = document.querySelector('.game-header').offsetHeight;
+                const sceneHeight = gameContainer.offsetHeight - headerHeight;
+                
+                // Устанавливаем высоту игровой сцены
+                document.querySelector('.game-scene').style.height = `${sceneHeight}px`;
+                
+                // Корректируем размер ёлки для мобильных устройств
+                if (window.innerWidth < 768) {
+                    document.querySelector('.tree-container').style.height = `${sceneHeight * 0.8}px`;
                 }
             }
             
             createGifts() {
                 // Очищаем контейнеры
                 this.elements.giftsGrid.innerHTML = '';
-                this.elements.giftsUnderTree.innerHTML = '';
                 
                 // Типы подарков (4 цвета)
                 const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
@@ -1843,7 +1760,7 @@
                     gift.className = 'gift';
                     gift.dataset.index = index;
                     gift.style.backgroundImage = `url('${giftType}.png')`;
-                    gift.title = `Слово ${index + 1}: ${word.question}`;
+                    gift.title = `Слово ${index + 1}`;
                     
                     gift.addEventListener('click', () => this.openGift(index));
                     
@@ -1862,9 +1779,6 @@
                         gift.classList.add('collected');
                         gift.style.pointerEvents = 'none';
                         gift.style.opacity = '0.3';
-                        
-                        // Добавляем собранный подарок под ёлку
-                        this.addGiftUnderTree(giftType);
                     }
                     
                     this.elements.giftsGrid.appendChild(gift);
@@ -1876,11 +1790,11 @@
                 gift.className = 'gift-under-tree';
                 gift.style.backgroundImage = `url('${giftType}.png')`;
                 
-                // Случайная позиция под ёлкой
-                const left = 20 + Math.random() * 60;
-                const bottom = 10 + Math.random() * 40;
+                // Случайная позиция под ёлкой (смещаем влево, чтобы не перекрывать Деда Мороза)
+                const left = 15 + Math.random() * 45; // От 15% до 60%
+                const bottom = 10 + Math.random() * 30;
                 const rotation = -15 + Math.random() * 30;
-                const scale = 0.8 + Math.random() * 0.4;
+                const scale = 0.7 + Math.random() * 0.3;
                 
                 gift.style.left = `${left}%`;
                 gift.style.bottom = `${bottom}%`;
@@ -1985,9 +1899,9 @@
                     }, 300);
                 }
                 
-                // Показываем модальное окно
-                this.elements.questionModal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+                // Показываем модальное окно и оверлей
+                this.elements.questionModal.style.display = 'block';
+                this.elements.modalOverlay.style.display = 'block';
             }
             
             allInputsFilled() {
@@ -2020,12 +1934,12 @@
                     // Сохраняем прогресс
                     this.saveProgress();
                     
-                    // Закрываем модальное окно через 1.5 секунды
+                    // Закрываем модальное окно через 1 секунду
                     setTimeout(() => {
                         this.closeQuestionModal();
                         this.updateUI();
                         this.checkWinCondition();
-                    }, 1500);
+                    }, 1000);
                     
                 } else {
                     // Неправильный ответ
@@ -2051,7 +1965,7 @@
                     if (this.lives <= 0) {
                         setTimeout(() => {
                             this.gameOver();
-                        }, 2000);
+                        }, 1500);
                     }
                 }
             }
@@ -2062,6 +1976,13 @@
                 
                 if (currentGift) {
                     currentGift.classList.add('collected');
+                    
+                    // Добавляем подарок под ёлку после завершения анимации
+                    setTimeout(() => {
+                        const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
+                        const giftType = giftTypes[this.currentWordIndex % giftTypes.length];
+                        this.addGiftUnderTree(giftType);
+                    }, 1200);
                 }
             }
             
@@ -2080,25 +2001,6 @@
                 
                 // Обновляем бонусы
                 this.elements.bonusCount.textContent = this.bonusPoints;
-                
-                // Добавляем собранные подарки под ёлку
-                if (this.collectedGifts > 0) {
-                    const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
-                    this.words.forEach((word, index) => {
-                        if (word.studied) {
-                            const giftType = giftTypes[index % giftTypes.length];
-                            // Проверяем, есть ли уже этот подарок под ёлкой
-                            const existingGifts = Array.from(this.elements.giftsUnderTree.children);
-                            const hasGift = existingGifts.some(gift => 
-                                gift.style.backgroundImage.includes(giftType)
-                            );
-                            
-                            if (!hasGift) {
-                                this.addGiftUnderTree(giftType);
-                            }
-                        }
-                    });
-                }
             }
             
             updateHearts() {
@@ -2115,7 +2017,7 @@
             
             closeQuestionModal() {
                 this.elements.questionModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
+                this.elements.modalOverlay.style.display = 'none';
                 
                 // Скрываем клавиатуру на мобильных устройствах
                 if ('ontouchstart' in window) {
@@ -2143,20 +2045,30 @@
                     this.elements.dictionaryList.appendChild(item);
                 });
                 
-                this.elements.dictionaryModal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+                this.elements.dictionaryModal.style.display = 'block';
+                this.elements.modalOverlay.style.display = 'block';
             }
             
             closeDictionary() {
                 this.elements.dictionaryModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
+                this.elements.modalOverlay.style.display = 'none';
+            }
+            
+            closeWinScreen() {
+                this.elements.winScreen.style.display = 'none';
+                this.elements.modalOverlay.style.display = 'none';
+            }
+            
+            closeLoseScreen() {
+                this.elements.loseScreen.style.display = 'none';
+                this.elements.modalOverlay.style.display = 'none';
             }
             
             checkWinCondition() {
                 if (this.collectedGifts >= this.totalGifts) {
                     setTimeout(() => {
                         this.winGame();
-                    }, 1000);
+                    }, 800);
                 }
             }
             
@@ -2172,16 +2084,14 @@
                 this.elements.finalLives.textContent = this.lives;
                 
                 // Показываем экран победы
-                setTimeout(() => {
-                    this.elements.winScreen.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }, 1500);
+                this.elements.winScreen.style.display = 'block';
+                this.elements.modalOverlay.style.display = 'block';
             }
             
             gameOver() {
                 this.gameActive = false;
-                this.elements.loseScreen.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+                this.elements.loseScreen.style.display = 'block';
+                this.elements.modalOverlay.style.display = 'block';
             }
             
             restartGame() {
@@ -2199,13 +2109,13 @@
                 this.elements.santa.style.animation = 'santaFloat 4s ease-in-out infinite';
                 
                 // Скрываем экраны
-                this.elements.winScreen.style.display = 'none';
-                this.elements.loseScreen.style.display = 'none';
-                this.elements.questionModal.style.display = 'none';
-                this.elements.dictionaryModal.style.display = 'none';
+                this.closeWinScreen();
+                this.closeLoseScreen();
+                this.closeQuestionModal();
+                this.closeDictionary();
                 
-                // Восстанавливаем прокрутку
-                document.body.style.overflow = 'auto';
+                // Очищаем подарки под ёлкой
+                this.elements.giftsUnderTree.innerHTML = '';
                 
                 // Пересоздаем подарки
                 this.createGifts();
@@ -2234,6 +2144,12 @@
                     progress.words.forEach((studied, index) => {
                         if (this.words[index]) {
                             this.words[index].studied = studied;
+                            if (studied) {
+                                // Добавляем подарок под ёлку
+                                const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
+                                const giftType = giftTypes[index % giftTypes.length];
+                                this.addGiftUnderTree(giftType);
+                            }
                         }
                     });
                     
@@ -2258,7 +2174,17 @@
 
         // Запуск игры при загрузке страницы
         document.addEventListener('DOMContentLoaded', () => {
-            new VocabularyGame();
+            const game = new VocabularyGame();
+            
+            // Вызываем handleViewport после загрузки страницы
+            setTimeout(() => {
+                game.handleViewport();
+            }, 100);
+            
+            // Обработка изменения размера окна
+            window.addEventListener('resize', () => {
+                game.handleViewport();
+            });
         });
 
         // Предотвращение скролла при касании элементов
