@@ -51,7 +51,7 @@
             50% { opacity: 1; }
         }
 
-        /* Снег */
+        /* Снег - поверх игрового экрана */
         .snowflakes-container {
             position: absolute;
             top: 0;
@@ -59,7 +59,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 2;
+            z-index: 4;
         }
 
         .snowflake {
@@ -74,8 +74,8 @@
         .game-container {
             width: 98%;
             height: 96%;
-            max-width: 1800px;
-            max-height: 1200px;
+            max-width: 1600px;
+            max-height: 1000px;
             display: flex;
             flex-direction: column;
             background: rgba(26, 82, 118, 0.3);
@@ -237,7 +237,7 @@
 
         /* Левая сторона - зимняя сцена */
         .left-side {
-            flex: 0 0 60%;
+            flex: 0 0 45%;
             position: relative;
             display: flex;
             align-items: flex-end;
@@ -282,18 +282,18 @@
 
         #tree {
             height: 95%;
-            max-height: 600px;
+            max-height: 550px;
             aspect-ratio: 0.7;
             background: url('tree.png') no-repeat center bottom;
             background-size: contain;
             filter: drop-shadow(0 15px 40px rgba(0,0,0,0.8));
         }
 
-        /* Дед Мороз */
+        /* Дед Мороз - без постоянной анимации */
         .santa-container {
             position: absolute;
             bottom: 80px;
-            right: 25%;
+            right: 15%;
             height: 30%;
             aspect-ratio: 0.6;
             z-index: 6;
@@ -305,13 +305,15 @@
             background: url('santa.png') no-repeat center bottom;
             background-size: contain;
             filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
-            animation: santaFloat 4s ease-in-out infinite;
+            /* Анимация только при правильном ответе */
         }
 
-        @keyframes santaFloat {
+        /* Анимация для Деда Мороза при правильном ответе */
+        @keyframes santaJump {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-4px) rotate(1deg); }
-            75% { transform: translateY(4px) rotate(-1deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(-40px) rotate(0deg); }
+            75% { transform: translateY(-20px) rotate(-5deg); }
         }
 
         /* Область для подарков под ёлкой */
@@ -330,8 +332,8 @@
         }
 
         .gift-under-tree {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center bottom;
@@ -340,13 +342,9 @@
             flex-shrink: 0;
         }
 
-        .gift-under-tree:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Правая сторона - подарки */
+        /* Правая сторона - все подарки в одной куче */
         .right-side {
-            flex: 0 0 40%;
+            flex: 0 0 55%;
             display: flex;
             flex-direction: column;
             padding: 10px;
@@ -365,94 +363,85 @@
             flex-shrink: 0;
         }
 
-        .gifts-grid {
+        /* Контейнер для всех подарков в куче */
+        .gifts-pile {
             flex: 1;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 12px;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            justify-content: center;
+            gap: 0;
             padding: 10px;
             overflow: hidden;
-            align-content: start;
         }
 
-        /* Стили для подарков в сетке */
+        /* Стили для подарков в куче - накладываются друг на друга */
         .gift {
-            width: 100%;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             cursor: pointer;
-            position: relative;
+            position: absolute;
             transition: all 0.3s;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.4));
-            flex-shrink: 0;
             touch-action: manipulation;
         }
 
         .gift:hover, .gift:active {
-            transform: translateY(-8px) scale(1.08) rotate(5deg);
+            transform: translateY(-8px) scale(1.1) rotate(5deg);
             filter: drop-shadow(0 8px 20px rgba(255,255,255,0.3));
+            z-index: 10 !important;
         }
 
         .gift.collected {
-            animation: flyToTree 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            animation: giftDisappear 0.8s forwards;
             pointer-events: none;
         }
 
-        @keyframes flyToTree {
+        @keyframes giftDisappear {
             0% {
-                transform: translate(0, 0) rotate(0deg) scale(1);
-                opacity: 1;
-                z-index: 100;
-            }
-            30% {
-                transform: translate(calc(-50vw + 300px), -40vh) rotate(180deg) scale(1.2);
-                opacity: 1;
-            }
-            70% {
-                transform: translate(calc(-50vw + 250px), 20vh) rotate(360deg) scale(1);
+                transform: scale(1) rotate(0deg);
                 opacity: 1;
             }
             100% {
-                transform: translate(0, 0) rotate(0deg) scale(1);
+                transform: scale(0) rotate(360deg);
                 opacity: 0;
-                z-index: 100;
             }
         }
 
-        /* Модальное окно с вопросом */
-        .modal {
-            display: none;
+        /* Окно с вопросом - вверху экрана */
+        .question-window {
             position: absolute;
-            top: 50%;
+            top: 80px;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 500px;
+            transform: translateX(-50%);
+            width: 600px;
             background: linear-gradient(135deg, #2c3e50, #34495e);
             border-radius: 20px;
             color: #ecf0f1;
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.7),
-                0 0 0 8px #3498db,
-                0 0 0 12px #2c3e50;
+                0 15px 30px rgba(0, 0, 0, 0.7),
+                0 0 0 6px #3498db,
+                0 0 0 10px #2c3e50;
             border: 4px solid #ecf0f1;
-            z-index: 1000;
-            animation: modalAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 100;
+            animation: questionAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             backdrop-filter: blur(5px);
         }
 
-        @keyframes modalAppear {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        @keyframes questionAppear {
+            0% { transform: translateX(-50%) translateY(-100px) scale(0.8); opacity: 0; }
+            100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
         }
 
-        .modal-content {
+        .question-content {
             padding: 20px;
         }
 
-        .modal-content h3 {
+        .question-content h3 {
             color: #f1c40f;
             margin-bottom: 15px;
             font-size: 1.5rem;
@@ -464,7 +453,7 @@
         .word-container {
             margin: 15px 0;
             padding: 15px;
-            background: rgba(52, 152, 219, 0.2);
+            background: rgba(52, 152, 219, 0.3);
             border-radius: 12px;
             border: 3px solid #3498db;
             overflow-x: auto;
@@ -473,7 +462,7 @@
         }
 
         .word-display {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             text-align: center;
             margin-bottom: 10px;
             font-weight: bold;
@@ -485,20 +474,20 @@
 
         .letter-slot {
             display: inline-block;
-            width: 45px;
-            height: 45px;
-            margin: 0 4px;
-            border-bottom: 3px solid #f1c40f;
+            width: 50px;
+            height: 50px;
+            margin: 0 5px;
+            border-bottom: 4px solid #f1c40f;
             position: relative;
             vertical-align: middle;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px 8px 0 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px 10px 0 0;
         }
 
         .letter-slot input {
             width: 100%;
             height: 100%;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             text-align: center;
             border: none;
             background: transparent;
@@ -510,8 +499,8 @@
         }
 
         .letter-slot input:focus {
-            background: rgba(241, 196, 15, 0.1);
-            border-radius: 8px;
+            background: rgba(241, 196, 15, 0.2);
+            border-radius: 10px;
         }
 
         .letter-slot.filled {
@@ -520,14 +509,14 @@
 
         @keyframes letterPop {
             0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
 
         .word-part {
             display: inline-block;
             margin: 0 2px;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             color: #ecf0f1;
             vertical-align: middle;
         }
@@ -557,7 +546,7 @@
         .hint-area {
             margin: 10px 0;
             padding: 12px;
-            background: rgba(241, 196, 15, 0.1);
+            background: rgba(241, 196, 15, 0.2);
             border-radius: 8px;
             border-left: 4px solid #f1c40f;
             font-size: 0.9rem;
@@ -595,6 +584,11 @@
             backdrop-filter: blur(5px);
         }
 
+        @keyframes modalAppear {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
         .dictionary-content {
             padding: 20px;
             display: flex;
@@ -621,7 +615,7 @@
         .dictionary-item {
             padding: 12px;
             margin: 8px 0;
-            background: rgba(52, 152, 219, 0.2);
+            background: rgba(52, 152, 219, 0.3);
             border-radius: 8px;
             border-left: 4px solid #2ecc71;
             transition: all 0.3s;
@@ -648,7 +642,7 @@
         }
 
         .dictionary-item.not-studied {
-            opacity: 0.5;
+            opacity: 0.6;
             border-left-color: #7f8c8d;
         }
 
@@ -705,7 +699,7 @@
         .stats-summary {
             margin: 15px 0;
             padding: 15px;
-            background: rgba(46, 204, 113, 0.2);
+            background: rgba(46, 204, 113, 0.3);
             border-radius: 12px;
             border: 2px solid #2ecc71;
         }
@@ -737,7 +731,7 @@
             box-shadow: 0 6px 16px rgba(52, 152, 219, 0.6);
         }
 
-        /* Оверлей для модальных окон */
+        /* Оверлей для словаря и окон победы/поражения */
         .modal-overlay {
             display: none;
             position: absolute;
@@ -745,7 +739,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 25, 49, 0.7);
+            background: rgba(10, 25, 49, 0.8);
             backdrop-filter: blur(3px);
             z-index: 999;
         }
@@ -758,15 +752,20 @@
             }
             
             .left-side {
-                flex: 0 0 55%;
+                flex: 0 0 40%;
             }
             
             .right-side {
-                flex: 0 0 45%;
+                flex: 0 0 60%;
             }
             
-            .gifts-grid {
-                grid-template-columns: repeat(3, 1fr);
+            .gift {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .question-window {
+                width: 500px;
             }
         }
 
@@ -782,36 +781,43 @@
             }
             
             .left-side {
-                height: 50%;
+                height: 40%;
                 padding-bottom: 30px;
             }
             
             .right-side {
-                height: 50%;
+                height: 60%;
             }
             
             #tree {
                 height: 80%;
+                max-height: 300px;
             }
             
             .santa-container {
                 height: 25%;
-                right: 20%;
+                right: 10%;
             }
             
-            .gifts-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
-                padding: 5px;
+            .gifts-pile {
+                gap: 0;
             }
             
             .gift {
-                height: 70px;
+                width: 55px;
+                height: 55px;
             }
             
-            .modal, .dictionary-modal, .win-screen, .lose-screen {
+            .question-window {
                 width: 90%;
                 max-width: 400px;
+                top: 70px;
+            }
+            
+            .dictionary-modal, .win-screen, .lose-screen {
+                width: 90%;
+                max-width: 400px;
+                height: 400px;
             }
         }
 
@@ -832,17 +838,27 @@
                 margin: 5px 0;
             }
             
-            .gifts-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
             .gift {
-                height: 60px;
+                width: 45px;
+                height: 45px;
             }
             
             .gift-under-tree {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .letter-slot {
                 width: 35px;
                 height: 35px;
+            }
+            
+            .word-display, .word-part {
+                font-size: 1.4rem;
+            }
+            
+            .question-content h3 {
+                font-size: 1.3rem;
             }
         }
 
@@ -853,7 +869,7 @@
             }
             
             .gift:active {
-                transform: translateY(-8px) scale(1.08) rotate(5deg);
+                transform: translateY(-8px) scale(1.1) rotate(5deg);
             }
             
             .dictionary-btn:hover,
@@ -879,10 +895,10 @@
     <!-- Звёздное небо -->
     <div id="stars" class="stars"></div>
     
-    <!-- Снег -->
+    <!-- Снег - поверх игрового экрана -->
     <div id="snowflakes-container" class="snowflakes-container"></div>
     
-    <!-- Оверлей для модальных окон -->
+    <!-- Оверлей для словаря и окон победы/поражения -->
     <div id="modal-overlay" class="modal-overlay"></div>
 
     <div class="game-container">
@@ -940,18 +956,18 @@
                 </div>
             </div>
 
-            <!-- Правая сторона - подарки для сбора -->
+            <!-- Правая сторона - все подарки в куче -->
             <div class="right-side">
                 <h3>🎁 Собери все подарки! 🎁</h3>
-                <div id="gifts-grid" class="gifts-grid">
-                    <!-- Подарки появятся здесь -->
+                <div id="gifts-pile" class="gifts-pile">
+                    <!-- Все подарки в одной куче -->
                 </div>
             </div>
         </div>
 
-        <!-- Модальное окно с вопросом -->
-        <div id="question-modal" class="modal">
-            <div class="modal-content">
+        <!-- Окно с вопросом - вверху экрана -->
+        <div id="question-window" class="question-window" style="display: none;">
+            <div class="question-content">
                 <h3>Вставьте пропущенные буквы</h3>
                 
                 <div class="word-container">
@@ -1574,9 +1590,9 @@
                 
                 // DOM элементы
                 this.elements = {
-                    giftsGrid: document.getElementById('gifts-grid'),
+                    giftsPile: document.getElementById('gifts-pile'),
                     giftsUnderTree: document.getElementById('gifts-under-tree'),
-                    questionModal: document.getElementById('question-modal'),
+                    questionWindow: document.getElementById('question-window'),
                     dictionaryModal: document.getElementById('dictionary-modal'),
                     winScreen: document.getElementById('win-screen'),
                     loseScreen: document.getElementById('lose-screen'),
@@ -1606,7 +1622,7 @@
                 this.createStars();
                 this.createSnowflakes();
                 this.setupEventListeners();
-                this.createGifts();
+                this.createGiftsPile();
                 this.updateUI();
                 this.loadProgress();
                 this.handleViewport();
@@ -1634,7 +1650,7 @@
             }
             
             createSnowflakes() {
-                const snowflakeCount = 40;
+                const snowflakeCount = 50;
                 
                 for (let i = 0; i < snowflakeCount; i++) {
                     const snowflake = document.createElement('div');
@@ -1645,7 +1661,7 @@
                     snowflake.style.backgroundImage = `url('snowflake${snowflakeType}.png')`;
                     
                     // Случайный размер
-                    const size = 8 + Math.random() * 20;
+                    const size = 6 + Math.random() * 15;
                     snowflake.style.width = `${size}px`;
                     snowflake.style.height = `${size}px`;
                     
@@ -1654,45 +1670,37 @@
                     snowflake.style.left = `${left}%`;
                     
                     // Случайная скорость и задержка
-                    const duration = 6 + Math.random() * 8;
-                    const delay = Math.random() * 3;
+                    const duration = 5 + Math.random() * 10;
+                    const delay = Math.random() * 5;
                     const swayAmount = 20 + Math.random() * 40;
                     
-                    snowflake.style.animation = `
-                        snowfall ${duration}s linear ${delay}s infinite,
-                        sway ${2 + Math.random() * 3}s ease-in-out ${delay}s infinite alternate
-                    `;
-                    
                     // Добавляем стили для анимаций
-                    const style = document.createElement('style');
-                    style.textContent = `
-                        @keyframes snowfall {
-                            0% {
-                                transform: translateY(-100px) rotate(0deg);
-                                opacity: 0;
+                    const styleId = `snowflake-style-${i}`;
+                    if (!document.getElementById(styleId)) {
+                        const style = document.createElement('style');
+                        style.id = styleId;
+                        style.textContent = `
+                            @keyframes snowfall-${i} {
+                                0% {
+                                    transform: translateY(-100px) translateX(0) rotate(0deg);
+                                    opacity: 0;
+                                }
+                                10% {
+                                    opacity: 0.7;
+                                }
+                                90% {
+                                    opacity: 0.7;
+                                }
+                                100% {
+                                    transform: translateY(100vh) translateX(${swayAmount}px) rotate(${180 + Math.random() * 180}deg);
+                                    opacity: 0;
+                                }
                             }
-                            10% {
-                                opacity: 0.6;
-                            }
-                            90% {
-                                opacity: 0.6;
-                            }
-                            100% {
-                                transform: translateY(100vh) rotate(${180 + Math.random() * 180}deg);
-                                opacity: 0;
-                            }
-                        }
-                        
-                        @keyframes sway {
-                            0%, 100% {
-                                transform: translateX(0);
-                            }
-                            50% {
-                                transform: translateX(${swayAmount}px);
-                            }
-                        }
-                    `;
-                    document.head.appendChild(style);
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    snowflake.style.animation = `snowfall-${i} ${duration}s linear ${delay}s infinite`;
                     
                     this.elements.snowflakesContainer.appendChild(snowflake);
                 }
@@ -1709,7 +1717,6 @@
                 
                 // Закрытие модальных окон по клику на оверлей
                 this.elements.modalOverlay.addEventListener('click', () => {
-                    this.closeQuestionModal();
                     this.closeDictionary();
                     this.closeWinScreen();
                     this.closeLoseScreen();
@@ -1737,30 +1744,47 @@
                 
                 // Устанавливаем высоту игровой сцены
                 document.querySelector('.game-scene').style.height = `${sceneHeight}px`;
-                
-                // Корректируем размер ёлки для мобильных устройств
-                if (window.innerWidth < 768) {
-                    document.querySelector('.tree-container').style.height = `${sceneHeight * 0.8}px`;
-                }
             }
             
-            createGifts() {
-                // Очищаем контейнеры
-                this.elements.giftsGrid.innerHTML = '';
+            createGiftsPile() {
+                // Очищаем контейнер
+                this.elements.giftsPile.innerHTML = '';
                 
                 // Типы подарков (4 цвета)
                 const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
                 
-                // Создаем подарки в сетке
+                // Параметры кучи подарков
+                const pileWidth = this.elements.giftsPile.offsetWidth;
+                const pileHeight = this.elements.giftsPile.offsetHeight;
+                const giftSize = 70;
+                const maxGiftsInRow = Math.floor(pileWidth / giftSize) * 2;
+                
+                // Создаем подарки в куче (накладываются друг на друга)
                 this.words.forEach((word, index) => {
                     const giftType = giftTypes[index % giftTypes.length];
                     
-                    // Подарок в сетке
+                    // Подарок в куче
                     const gift = document.createElement('div');
                     gift.className = 'gift';
                     gift.dataset.index = index;
                     gift.style.backgroundImage = `url('${giftType}.png')`;
                     gift.title = `Слово ${index + 1}`;
+                    
+                    // Случайная позиция в куче (накладываются друг на друга)
+                    const row = Math.floor(index / maxGiftsInRow);
+                    const col = index % maxGiftsInRow;
+                    const offsetX = Math.random() * 30 - 15; // Случайное смещение
+                    const offsetY = Math.random() * 30 - 15;
+                    const rotation = -20 + Math.random() * 40;
+                    
+                    const left = (col * giftSize * 0.5) + offsetX;
+                    const top = (row * giftSize * 0.7) + offsetY;
+                    const zIndex = index;
+                    
+                    gift.style.left = `${left}px`;
+                    gift.style.top = `${top}px`;
+                    gift.style.transform = `rotate(${rotation}deg)`;
+                    gift.style.zIndex = zIndex;
                     
                     gift.addEventListener('click', () => this.openGift(index));
                     
@@ -1776,12 +1800,11 @@
                     
                     // Если слово уже изучено, подарок собран
                     if (word.studied) {
-                        gift.classList.add('collected');
-                        gift.style.pointerEvents = 'none';
                         gift.style.opacity = '0.3';
+                        gift.style.pointerEvents = 'none';
                     }
                     
-                    this.elements.giftsGrid.appendChild(gift);
+                    this.elements.giftsPile.appendChild(gift);
                 });
             }
             
@@ -1790,11 +1813,11 @@
                 gift.className = 'gift-under-tree';
                 gift.style.backgroundImage = `url('${giftType}.png')`;
                 
-                // Случайная позиция под ёлкой (смещаем влево, чтобы не перекрывать Деда Мороза)
-                const left = 15 + Math.random() * 45; // От 15% до 60%
+                // Позиция под ёлкой (смещаем влево, чтобы не перекрывать Деда Мороза)
+                const left = 10 + Math.random() * 40; // От 10% до 50%
                 const bottom = 10 + Math.random() * 30;
                 const rotation = -15 + Math.random() * 30;
-                const scale = 0.7 + Math.random() * 0.3;
+                const scale = 0.6 + Math.random() * 0.2;
                 
                 gift.style.left = `${left}%`;
                 gift.style.bottom = `${bottom}%`;
@@ -1812,7 +1835,7 @@
                 // Если слово уже изучено, не открываем
                 if (word.studied) return;
                 
-                // Показываем модальное окно
+                // Показываем окно с вопросом
                 this.showQuestion(word);
             }
             
@@ -1899,9 +1922,8 @@
                     }, 300);
                 }
                 
-                // Показываем модальное окно и оверлей
-                this.elements.questionModal.style.display = 'block';
-                this.elements.modalOverlay.style.display = 'block';
+                // Показываем окно с вопросом
+                this.elements.questionWindow.style.display = 'block';
             }
             
             allInputsFilled() {
@@ -1928,18 +1950,28 @@
                     // Помечаем слово как изученное
                     word.studied = true;
                     
-                    // Анимация полета подарка
-                    this.animateGiftToTree();
+                    // Анимация Деда Мороза
+                    this.animateSanta();
+                    
+                    // Анимация исчезновения подарка
+                    this.animateGiftDisappear();
+                    
+                    // Добавляем подарок под ёлку
+                    const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
+                    const giftType = giftTypes[this.currentWordIndex % giftTypes.length];
+                    setTimeout(() => {
+                        this.addGiftUnderTree(giftType);
+                    }, 800);
                     
                     // Сохраняем прогресс
                     this.saveProgress();
                     
-                    // Закрываем модальное окно через 1 секунду
+                    // Закрываем окно с вопросом через 1.5 секунды
                     setTimeout(() => {
-                        this.closeQuestionModal();
+                        this.closeQuestionWindow();
                         this.updateUI();
                         this.checkWinCondition();
-                    }, 1000);
+                    }, 1500);
                     
                 } else {
                     // Неправильный ответ
@@ -1970,19 +2002,23 @@
                 }
             }
             
-            animateGiftToTree() {
+            animateSanta() {
+                // Запускаем анимацию прыжка Деда Мороза
+                this.elements.santa.style.animation = 'santaJump 1s ease-in-out';
+                
+                // Возвращаем к обычному состоянию после анимации
+                setTimeout(() => {
+                    this.elements.santa.style.animation = '';
+                }, 1000);
+            }
+            
+            animateGiftDisappear() {
                 const gifts = document.querySelectorAll('.gift');
                 const currentGift = gifts[this.currentWordIndex];
                 
                 if (currentGift) {
                     currentGift.classList.add('collected');
-                    
-                    // Добавляем подарок под ёлку после завершения анимации
-                    setTimeout(() => {
-                        const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
-                        const giftType = giftTypes[this.currentWordIndex % giftTypes.length];
-                        this.addGiftUnderTree(giftType);
-                    }, 1200);
+                    currentGift.style.pointerEvents = 'none';
                 }
             }
             
@@ -2015,9 +2051,8 @@
                 });
             }
             
-            closeQuestionModal() {
-                this.elements.questionModal.style.display = 'none';
-                this.elements.modalOverlay.style.display = 'none';
+            closeQuestionWindow() {
+                this.elements.questionWindow.style.display = 'none';
                 
                 // Скрываем клавиатуру на мобильных устройствах
                 if ('ontouchstart' in window) {
@@ -2075,9 +2110,6 @@
             winGame() {
                 this.gameActive = false;
                 
-                // Анимация Деда Мороза
-                this.elements.santa.style.animation = 'santaFloat 0.5s infinite';
-                
                 // Обновляем статистику
                 this.elements.finalGifts.textContent = this.collectedGifts;
                 this.elements.finalBonus.textContent = this.bonusPoints;
@@ -2105,20 +2137,17 @@
                 this.bonusPoints = 0;
                 this.gameActive = true;
                 
-                // Сбрасываем анимации
-                this.elements.santa.style.animation = 'santaFloat 4s ease-in-out infinite';
-                
                 // Скрываем экраны
                 this.closeWinScreen();
                 this.closeLoseScreen();
-                this.closeQuestionModal();
+                this.closeQuestionWindow();
                 this.closeDictionary();
                 
                 // Очищаем подарки под ёлкой
                 this.elements.giftsUnderTree.innerHTML = '';
                 
                 // Пересоздаем подарки
-                this.createGifts();
+                this.createGiftsPile();
                 this.updateUI();
                 
                 // Очищаем сохраненный прогресс
@@ -2160,7 +2189,7 @@
                     
                     // Обновляем интерфейс
                     this.updateUI();
-                    this.createGifts();
+                    this.createGiftsPile();
                     
                     // Проверяем условия победы
                     if (this.collectedGifts >= this.totalGifts) {
