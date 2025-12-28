@@ -363,8 +363,8 @@
 
         .gift-under-tree {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center bottom;
@@ -373,17 +373,16 @@
             bottom: 0;
         }
 
-        /* Правая сторона - все подарки в одной куче */
+        /* Правая сторона - все подарки внизу в одной куче */
         .right-side {
             flex: 0 0 55%;
             display: flex;
             flex-direction: column;
-            padding: 10px;
         }
 
         .right-side h3 {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-size: 1.4rem;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
@@ -394,31 +393,33 @@
             flex-shrink: 0;
         }
 
-        /* Контейнер для всех подарков в куче */
+        /* Контейнер для всех подарков в куче внизу */
         .gifts-pile {
             flex: 1;
             position: relative;
             display: flex;
             flex-wrap: wrap;
-            align-content: flex-start;
+            align-content: flex-end;
             justify-content: center;
-            gap: 0;
+            gap: 5px;
             padding: 10px;
             overflow: hidden;
+            min-height: 200px;
         }
 
         /* Стили для подарков в куче - накладываются друг на друга */
         .gift {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             cursor: pointer;
-            position: absolute;
+            position: relative;
             transition: all 0.3s;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.4));
             touch-action: manipulation;
+            margin-top: -30px; /* Перекрытие подарков */
         }
 
         .gift:hover, .gift:active {
@@ -770,18 +771,6 @@
             box-shadow: 0 6px 16px rgba(52, 152, 219, 0.6);
         }
 
-        /* Оверлей для словаря и окон победы/поражения */
-        .modal-overlay {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 25, 49, 0.9);
-            z-index: 999;
-        }
-
         /* Адаптивность для мобильных устройств */
         @media (max-width: 1200px) {
             .game-container {
@@ -798,8 +787,8 @@
             }
             
             .gift {
-                width: 65px;
-                height: 65px;
+                width: 55px;
+                height: 55px;
             }
             
             .question-window {
@@ -849,12 +838,13 @@
             }
             
             .gifts-pile {
-                gap: 0;
+                gap: 5px;
             }
             
             .gift {
-                width: 55px;
-                height: 55px;
+                width: 50px;
+                height: 50px;
+                margin-top: -25px;
             }
             
             .question-window {
@@ -893,13 +883,14 @@
             }
             
             .gift {
-                width: 45px;
-                height: 45px;
+                width: 40px;
+                height: 40px;
+                margin-top: -20px;
             }
             
             .gift-under-tree {
-                width: 30px;
-                height: 30px;
+                width: 25px;
+                height: 25px;
             }
             
             .letter-slot {
@@ -953,10 +944,6 @@
     
     <!-- Снег - поверх игрового экрана -->
     <div id="snowflakes-container" class="snowflakes-container"></div>
-    
-    <!-- Оверлей для словаря и окон победы/поражения -->
-    <div id="modal-overlay" class="modal-overlay"></div>
-
     <div class="game-container">
         <!-- Шапка с жизнями и прогрессом -->
         <div class="game-header">
@@ -1015,11 +1002,11 @@
                 </div>
             </div>
 
-            <!-- Правая сторона - все подарки в куче -->
+            <!-- Правая сторона - все подарки внизу в куче -->
             <div class="right-side">
                 <h3>🎁 Собери все подарки! 🎁</h3>
                 <div id="gifts-pile" class="gifts-pile">
-                    <!-- Все подарки в одной куче -->
+                    <!-- Все подарки в одной куче внизу -->
                 </div>
             </div>
         </div>
@@ -1667,6 +1654,7 @@
                 this.gameActive = true;
                 this.bonusPoints = 0;
                 this.inputSlots = [];
+                this.availableGifts = []; // Индексы доступных подарков (те, что сверху кучи)
                 
                 // DOM элементы
                 this.elements = {
@@ -1707,7 +1695,6 @@
                 this.setupEventListeners();
                 this.createGiftsPile();
                 this.updateUI();
-                this.loadProgress();
                 this.handleViewport();
             }
             
@@ -1833,6 +1820,7 @@
             createGiftsPile() {
                 // Очищаем контейнер
                 this.elements.giftsPile.innerHTML = '';
+                this.availableGifts = [];
                 
                 // Типы подарков (4 цвета)
                 const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
@@ -1840,37 +1828,39 @@
                 // Параметры кучи подарков
                 const pileWidth = this.elements.giftsPile.offsetWidth;
                 const pileHeight = this.elements.giftsPile.offsetHeight;
-                const giftSize = 70;
-                const maxGiftsInRow = Math.floor(pileWidth / giftSize) * 2;
+                const giftSize = 60;
                 
-                // Создаем подарки в куче (накладываются друг на друга)
-                this.words.forEach((word, index) => {
-                    const giftType = giftTypes[index % giftTypes.length];
+                // Определяем, сколько подарков поместится в ряд
+                const giftsInRow = Math.floor(pileWidth / (giftSize * 0.8));
+                
+                // Создаем подарки в виде кучи (пирамиды) внизу экрана
+                for (let i = 0; i < this.words.length; i++) {
+                    const giftType = giftTypes[i % giftTypes.length];
                     
                     // Подарок в куче
                     const gift = document.createElement('div');
                     gift.className = 'gift';
-                    gift.dataset.index = index;
+                    gift.dataset.index = i;
+                    gift.dataset.zIndex = i;
                     gift.style.backgroundImage = `url('${giftType}.png')`;
-                    gift.title = `Слово ${index + 1}`;
+                    gift.title = `Слово ${i + 1}`;
                     
-                    // Случайная позиция в куче (накладываются друг на друга)
-                    const row = Math.floor(index / maxGiftsInRow);
-                    const col = index % maxGiftsInRow;
-                    const offsetX = Math.random() * 30 - 15; // Случайное смещение
-                    const offsetY = Math.random() * 30 - 15;
-                    const rotation = -20 + Math.random() * 40;
+                    // Позиционируем подарки в виде пирамиды
+                    const row = Math.floor(i / giftsInRow);
+                    const col = i % giftsInRow;
+                    const offsetX = Math.random() * 20 - 10; // Случайное смещение для реалистичности
                     
-                    const left = (col * giftSize * 0.5) + offsetX;
-                    const top = (row * giftSize * 0.7) + offsetY;
-                    const zIndex = index;
+                    const left = col * (giftSize * 0.8) + offsetX;
+                    const top = pileHeight - (row + 1) * (giftSize * 0.6); // Снизу вверх
+                    const rotation = -15 + Math.random() * 30;
                     
                     gift.style.left = `${left}px`;
                     gift.style.top = `${top}px`;
                     gift.style.transform = `rotate(${rotation}deg)`;
-                    gift.style.zIndex = zIndex;
+                    gift.style.zIndex = i;
                     
-                    gift.addEventListener('click', () => this.openGift(index));
+                    // Событие клика на подарок
+                    gift.addEventListener('click', () => this.openGift(i));
                     
                     // Добавляем поддержку тач-событий
                     gift.addEventListener('touchstart', (e) => {
@@ -1879,17 +1869,21 @@
                     
                     gift.addEventListener('touchend', (e) => {
                         e.preventDefault();
-                        this.openGift(index);
+                        this.openGift(i);
                     });
                     
-                    // Если слово уже изучено, подарок собран
-                    if (word.studied) {
-                        gift.style.opacity = '0.3';
-                        gift.style.pointerEvents = 'none';
+                    // Если слово уже изучено, скрываем подарок
+                    if (this.words[i].studied) {
+                        gift.style.display = 'none';
+                    } else {
+                        // Добавляем в доступные только подарки верхнего ряда
+                        if (row === 0) {
+                            this.availableGifts.push(i);
+                        }
                     }
                     
                     this.elements.giftsPile.appendChild(gift);
-                });
+                }
             }
             
             addGiftToMountain(giftType) {
@@ -1917,6 +1911,17 @@
             
             openGift(index) {
                 if (!this.gameActive) return;
+                
+                // Проверяем, доступен ли этот подарок (находится ли сверху)
+                if (!this.availableGifts.includes(index)) {
+                    // Показываем сообщение, что нужно сначала собрать подарки сверху
+                    this.elements.hintArea.textContent = "Сначала собери подарки сверху кучи!";
+                    this.elements.hintArea.style.display = 'block';
+                    setTimeout(() => {
+                        this.elements.hintArea.style.display = 'none';
+                    }, 1500);
+                    return;
+                }
                 
                 const word = this.words[index];
                 this.currentWordIndex = index;
@@ -2052,8 +2057,14 @@
                         this.addGiftToMountain(giftType);
                     }, 800);
                     
-                    // Сохраняем прогресс
-                    this.saveProgress();
+                    // Удаляем из доступных подарков
+                    const giftIndex = this.availableGifts.indexOf(this.currentWordIndex);
+                    if (giftIndex > -1) {
+                        this.availableGifts.splice(giftIndex, 1);
+                    }
+                    
+                    // Находим подарки под этим и делаем их доступными
+                    this.updateAvailableGifts();
                     
                     // Закрываем окно с вопросом через 1.5 секунды
                     setTimeout(() => {
@@ -2089,6 +2100,33 @@
                         }, 1500);
                     }
                 }
+            }
+            
+            updateAvailableGifts() {
+                // После сбора подарка делаем доступными подарки, которые оказались сверху
+                const allGifts = document.querySelectorAll('.gift:not(.collected)');
+                const pileWidth = this.elements.giftsPile.offsetWidth;
+                const giftSize = 60;
+                const giftsInRow = Math.floor(pileWidth / (giftSize * 0.8));
+                
+                // Находим минимальную позицию Y среди оставшихся подарков
+                let minY = Infinity;
+                allGifts.forEach(gift => {
+                    const rect = gift.getBoundingClientRect();
+                    if (rect.top < minY) {
+                        minY = rect.top;
+                    }
+                });
+                
+                // Добавляем в доступные все подарки с минимальной позицией Y
+                allGifts.forEach(gift => {
+                    const rect = gift.getBoundingClientRect();
+                    const index = parseInt(gift.dataset.index);
+                    
+                    if (Math.abs(rect.top - minY) < 10 && !this.availableGifts.includes(index)) {
+                        this.availableGifts.push(index);
+                    }
+                });
             }
             
             animateSanta() {
@@ -2235,6 +2273,7 @@
                 this.collectedGifts = 0;
                 this.bonusPoints = 0;
                 this.gameActive = true;
+                this.availableGifts = [];
                 
                 // Скрываем все модальные окна
                 this.closeQuestionWindow();
@@ -2248,55 +2287,6 @@
                 // Пересоздаем подарки
                 this.createGiftsPile();
                 this.updateUI();
-                
-                // Очищаем сохраненный прогресс
-                localStorage.removeItem('vocabularyGameProgress');
-            }
-            
-            saveProgress() {
-                const progress = {
-                    words: this.words.map(word => word.studied),
-                    lives: this.lives,
-                    collectedGifts: this.collectedGifts,
-                    bonusPoints: this.bonusPoints
-                };
-                localStorage.setItem('vocabularyGameProgress', JSON.stringify(progress));
-            }
-            
-            loadProgress() {
-                const saved = localStorage.getItem('vocabularyGameProgress');
-                if (saved) {
-                    const progress = JSON.parse(saved);
-                    
-                    // Восстанавливаем изученные слова
-                    progress.words.forEach((studied, index) => {
-                        if (this.words[index]) {
-                            this.words[index].studied = studied;
-                            if (studied) {
-                                // Добавляем подарок в гору под ёлкой
-                                const giftTypes = ['gift_red', 'gift_blue', 'gift_green', 'gift_yellow'];
-                                const giftType = giftTypes[index % giftTypes.length];
-                                this.addGiftToMountain(giftType);
-                            }
-                        }
-                    });
-                    
-                    // Восстанавливаем жизни, счет и бонусы
-                    this.lives = progress.lives || 3;
-                    this.collectedGifts = progress.collectedGifts || 0;
-                    this.bonusPoints = progress.bonusPoints || 0;
-                    
-                    // Обновляем интерфейс
-                    this.updateUI();
-                    this.createGiftsPile();
-                    
-                    // Проверяем условия победы
-                    if (this.collectedGifts >= this.totalGifts) {
-                        setTimeout(() => {
-                            this.winGame();
-                        }, 500);
-                    }
-                }
             }
         }
 
